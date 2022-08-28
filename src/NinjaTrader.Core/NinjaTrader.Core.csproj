@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4D8EC193-AF95-455F-90E1-B5D35F9D6A28}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NinjaTrader.Core</RootNamespace>
+    <AssemblyName>NinjaTrader.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(SolutionDir)..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(SolutionDir)..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cbi\Account.cs" />
+    <Compile Include="Cbi\AccountItem.cs" />
+    <Compile Include="Cbi\AccountItemEventArgs.cs" />
+    <Compile Include="Cbi\AccountStatusEventArgs.cs" />
+    <Compile Include="Cbi\AutoTrailStep.cs" />
+    <Compile Include="Cbi\Bracket.cs" />
+    <Compile Include="Cbi\InstrumentCommission.cs" />
+    <Compile Include="Cbi\Execution.cs" />
+    <Compile Include="Cbi\ExecutionEventArgs.cs" />
+    <Compile Include="Cbi\LogLevel.cs" />
+    <Compile Include="Cbi\LookupPolicies.cs" />
+    <Compile Include="Cbi\MarketPosition.cs" />
+    <Compile Include="Cbi\Operation.cs" />
+    <Compile Include="Cbi\Order.cs" />
+    <Compile Include="Cbi\OrderEntry.cs" />
+    <Compile Include="Cbi\Connection.cs" />
+    <Compile Include="Cbi\ConnectionStatus.cs" />
+    <Compile Include="Cbi\ConnectionStatusEventArgs.cs" />
+    <Compile Include="Cbi\Currency.cs" />
+    <Compile Include="Cbi\Dividend.cs" />
+    <Compile Include="Cbi\Exchange.cs" />
+    <Compile Include="Cbi\InstrumentType.cs" />
+    <Compile Include="Cbi\MasterInstrument.cs" />
+    <Compile Include="Cbi\ErrorCode.cs" />
+    <Compile Include="Cbi\Instrument.cs" />
+    <Compile Include="Cbi\ISnapShotSerializable.cs" />
+    <Compile Include="Cbi\MergePolicy.cs" />
+    <Compile Include="Cbi\OptionRight.cs" />
+    <Compile Include="Cbi\OrderAction.cs" />
+    <Compile Include="Cbi\OrderEventArgs.cs" />
+    <Compile Include="Cbi\OrderState.cs" />
+    <Compile Include="Cbi\OrderType.cs" />
+    <Compile Include="Cbi\Position.cs" />
+    <Compile Include="Cbi\PositionEventArgs.cs" />
+    <Compile Include="Cbi\RangeType.cs" />
+    <Compile Include="Cbi\Rollover.cs" />
+    <Compile Include="Cbi\RolloverCollection.cs" />
+    <Compile Include="Cbi\SnapShotIncludeAttribute.cs" />
+    <Compile Include="Cbi\Split.cs" />
+    <Compile Include="Cbi\StopStrategy.cs" />
+    <Compile Include="Cbi\SystemPerformance.cs" />
+    <Compile Include="Cbi\TimeInForce.cs" />
+    <Compile Include="Cbi\TimerTickEventArgs.cs" />
+    <Compile Include="Cbi\TradingHoursBreakLineVisible.cs" />
+    <Compile Include="Code\Output.cs" />
+    <Compile Include="Code\OutputEventArgs.cs" />
+    <Compile Include="Data\Bar.cs" />
+    <Compile Include="Data\Bars.cs" />
+    <Compile Include="Data\BarsBytes.cs" />
+    <Compile Include="Data\BarsCallbackState.cs" />
+    <Compile Include="Data\BarsPeriod.cs" />
+    <Compile Include="Data\BarsPeriodType.cs" />
+    <Compile Include="Data\BarsSeries.cs" />
+    <Compile Include="Data\BarsType.cs" />
+    <Compile Include="Data\BarsUpdateEventArgs.cs" />
+    <Compile Include="Data\CallbackListAndInfo.cs" />
+    <Compile Include="Data\Chunk.cs" />
+    <Compile Include="Data\ConnectionOnRequest.cs" />
+    <Compile Include="Data\FundamentalData.cs" />
+    <Compile Include="Data\FundamentalDataEventArgs.cs" />
+    <Compile Include="Data\FundamentalDataType.cs" />
+    <Compile Include="Data\GetBarsParameter.cs" />
+    <Compile Include="Data\Holiday.cs" />
+    <Compile Include="Data\IBarsPeriodProvider.cs" />
+    <Compile Include="Data\IInstrumentProvider.cs" />
+    <Compile Include="Data\MarketDataEventArgs.cs" />
+    <Compile Include="Data\MarketDataItem.cs" />
+    <Compile Include="Data\MarketDepthEventArgs.cs" />
+    <Compile Include="Data\PartialHoliday.cs" />
+    <Compile Include="Data\PointAndFigurePriceType.cs" />
+    <Compile Include="Data\IBars.cs" />
+    <Compile Include="Data\MarketDataType.cs" />
+    <Compile Include="Data\PriceType.cs" />
+    <Compile Include="Data\RealtimeData.cs" />
+    <Compile Include="Data\ReplayObject.cs" />
+    <Compile Include="Data\RepositoryReloadedEventArgs.cs" />
+    <Compile Include="Data\RepositoryReloadedEventHandler.cs" />
+    <Compile Include="Data\RequestCallback.cs" />
+    <Compile Include="Data\ReversalType.cs" />
+    <Compile Include="Data\Session.cs" />
+    <Compile Include="Data\SessionIterator.cs" />
+    <Compile Include="Data\TickReplayIterator.cs" />
+    <Compile Include="Data\TradingHours.cs" />
+    <Compile Include="Data\VolumetricDeltaType.cs" />
+    <Compile Include="Deserializer.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="Gui\Chart\ChartStyleType.cs" />
+    <Compile Include="Gui\Chart\ScaleJustification.cs" />
+    <Compile Include="Gui\DashStyleHelper.cs" />
+    <Compile Include="Gui\Line.cs" />
+    <Compile Include="Gui\NotifyPropertyChangedBase.cs" />
+    <Compile Include="Gui\Plot.cs" />
+    <Compile Include="Gui\Serialize.cs" />
+    <Compile Include="Gui\Stroke.cs" />
+    <Compile Include="Gui\TradingHoursBreakLine.cs" />
+    <Compile Include="IProgress.cs" />
+    <Compile Include="MathExtentions.cs" />
+    <Compile Include="NinjaScript\AtmStrategy.cs" />
+    <Compile Include="NinjaScript\AtmStrategySelectionMode.cs" />
+    <Compile Include="NinjaScript\BarGraphGrowthType.cs" />
+    <Compile Include="NinjaScript\BrushSeries.cs" />
+    <Compile Include="NinjaScript\Calculate.cs" />
+    <Compile Include="NinjaScript\CalculationMode.cs" />
+    <Compile Include="NinjaScript\Category.cs" />
+    <Compile Include="NinjaScript\CellCondition.cs" />
+    <Compile Include="NinjaScript\ChangedEventArgs.cs" />
+    <Compile Include="NinjaScript\ColumnType.cs" />
+    <Compile Include="NinjaScript\ConnectionLossHandling.cs" />
+    <Compile Include="NinjaScript\EntryHandling.cs" />
+    <Compile Include="NinjaScript\FillType.cs" />
+    <Compile Include="NinjaScript\FilterCondition.cs" />
+    <Compile Include="NinjaScript\GeneratedStrategyLogicBase.cs" />
+    <Compile Include="NinjaScript\Index2BarsString.cs" />
+    <Compile Include="NinjaScript\IndicatorBase.cs" />
+    <Compile Include="NinjaScript\ISeries.cs" />
+    <Compile Include="NinjaScript\IStrategyInputsProvider.cs" />
+    <Compile Include="NinjaScript\MarketAnalyzerColumnBase.cs" />
+    <Compile Include="NinjaScript\MarketAnalyzerColumnColorDistribution.cs" />
+    <Compile Include="NinjaScript\MaximumBarsLookBack.cs" />
+    <Compile Include="NinjaScript\NinjaScript.cs" />
+    <Compile Include="NinjaScript\NinjaScriptBase.cs" />
+    <Compile Include="NinjaScript\NinjaScriptPropertyAttribute.cs" />
+    <Compile Include="NinjaScript\Parameter.cs" />
+    <Compile Include="NinjaScript\PlotStyle.cs" />
+    <Compile Include="NinjaScript\PriceSeries.cs" />
+    <Compile Include="NinjaScript\PrintTo.cs" />
+    <Compile Include="NinjaScript\Priority.cs" />
+    <Compile Include="NinjaScript\RealtimeErrorHandling.cs" />
+    <Compile Include="NinjaScript\ReverseType.cs" />
+    <Compile Include="NinjaScript\Series.cs" />
+    <Compile Include="NinjaScript\SetOrderQuantity.cs" />
+    <Compile Include="NinjaScript\StartBehavior.cs" />
+    <Compile Include="NinjaScript\State.cs" />
+    <Compile Include="NinjaScript\StopTarget.cs" />
+    <Compile Include="NinjaScript\StopTargetHandling.cs" />
+    <Compile Include="NinjaScript\StopTargetType.cs" />
+    <Compile Include="NinjaScript\StrategyBase.cs" />
+    <Compile Include="NinjaScript\TimeSeries.cs" />
+    <Compile Include="NinjaScript\TrackedOrder.cs" />
+    <Compile Include="NinjaScript\VolumeSeries.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource.cs" />
+    <Compile Include="SharpDX\Direct2D1\AntialiasMode.cs" />
+    <Compile Include="SharpDX\Direct2D1\ArcSegment.cs" />
+    <Compile Include="SharpDX\Direct2D1\ArcSize.cs" />
+    <Compile Include="SharpDX\Direct2D1\BezierSegment.cs" />
+    <Compile Include="SharpDX\Direct2D1\Bitmap.cs" />
+    <Compile Include="SharpDX\Direct2D1\BitmapInterpolationMode.cs" />
+    <Compile Include="SharpDX\Direct2D1\Brush.cs" />
+    <Compile Include="SharpDX\Direct2D1\CapStyle.cs" />
+    <Compile Include="SharpDX\Direct2D1\DashStyle.cs" />
+    <Compile Include="SharpDX\Direct2D1\DrawingStateBlock.cs" />
+    <Compile Include="SharpDX\Direct2D1\DrawTextOptions.cs" />
+    <Compile Include="SharpDX\Direct2D1\Ellipse.cs" />
+    <Compile Include="SharpDX\Direct2D1\Factory.cs" />
+    <Compile Include="SharpDX\Direct2D1\FigureBegin.cs" />
+    <Compile Include="SharpDX\Direct2D1\FigureEnd.cs" />
+    <Compile Include="SharpDX\Direct2D1\Geometry.cs" />
+    <Compile Include="SharpDX\Direct2D1\GeometryRelation.cs" />
+    <Compile Include="SharpDX\Direct2D1\GeometrySimplificationOption.cs" />
+    <Compile Include="SharpDX\Direct2D1\GeometrySink.cs" />
+    <Compile Include="SharpDX\Direct2D1\Layer.cs" />
+    <Compile Include="SharpDX\Direct2D1\LayerParameters.cs" />
+    <Compile Include="SharpDX\Direct2D1\LineJoin.cs" />
+    <Compile Include="SharpDX\Direct2D1\MeasuringMode.cs" />
+    <Compile Include="SharpDX\Direct2D1\Mesh.cs" />
+    <Compile Include="SharpDX\Direct2D1\OpacityMaskContent.cs" />
+    <Compile Include="SharpDX\Direct2D1\PathGeometry.cs" />
+    <Compile Include="SharpDX\Direct2D1\PathSegment.cs" />
+    <Compile Include="SharpDX\Direct2D1\PixelFormat.cs" />
+    <Compile Include="SharpDX\Direct2D1\QuadraticBezierSegment.cs" />
+    <Compile Include="SharpDX\Direct2D1\RenderTargetProperties.cs" />
+    <Compile Include="SharpDX\Direct2D1\RoundedRectangle.cs" />
+    <Compile Include="SharpDX\Direct2D1\SimplifiedGeometrySink.cs" />
+    <Compile Include="SharpDX\Direct2D1\StrokeStyle.cs" />
+    <Compile Include="SharpDX\Direct2D1\SweepDirection.cs" />
+    <Compile Include="SharpDX\Direct2D1\TessellationSink.cs" />
+    <Compile Include="SharpDX\Direct2D1\TextAntialiasMode.cs" />
+    <Compile Include="SharpDX\Direct2D1\Triangle.cs" />
+    <Compile Include="SharpDX\DirectWrite\Brush.cs" />
+    <Compile Include="SharpDX\DirectWrite\GlyphRun.cs" />
+    <Compile Include="SharpDX\DirectWrite\RenderingParams.cs" />
+    <Compile Include="SharpDX\DirectWrite\RenderTarget.cs" />
+    <Compile Include="SharpDX\DirectWrite\StrokeStyle.cs" />
+    <Compile Include="SharpDX\DirectWrite\TextFormat.cs" />
+    <Compile Include="SharpDX\DirectWrite\TextLayout.cs" />
+    <Compile Include="SharpDX\FillMode.cs" />
+    <Compile Include="SharpDX\ICallbackable.cs" />
+    <Compile Include="SharpDX\Matrix3x2.cs" />
+    <Compile Include="SharpDX\Direct2D1\RenderTarget.cs" />
+    <Compile Include="SharpDX\Quaternion.cs" />
+    <Compile Include="SharpDX\RectangleF.cs" />
+    <Compile Include="SharpDX\Point.cs" />
+    <Compile Include="SharpDX\Size2.cs" />
+    <Compile Include="SharpDX\Size2F.cs" />
+    <Compile Include="SharpDX\Vector2.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
