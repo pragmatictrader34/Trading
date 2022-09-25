@@ -3,10 +3,10 @@ using Xunit;
 
 namespace NinjaTrader.Custom.UnitTests
 {
-    public class Class1
+    public class Tests
     {
         [Fact]
-        public void METHOD()
+        public void Test()
         {
             var atr = new ATR();
         }
