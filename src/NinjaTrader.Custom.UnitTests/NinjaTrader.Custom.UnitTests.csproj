@@ -67,9 +67,17 @@
     <Analyzer Include="..\packages\xunit.analyzers.1.0.0\analyzers\dotnet\cs\xunit.analyzers.fixes.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NinjaTrader.Core\NinjaTrader.Core.csproj">
+      <Project>{4D8EC193-AF95-455F-90E1-B5D35F9D6A28}</Project>
+      <Name>NinjaTrader.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NinjaTrader.Custom\NinjaTrader.Custom.csproj">
       <Project>{af9fa825-f452-4071-ace9-fab5b44a013e}</Project>
       <Name>NinjaTrader.Custom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NinjaTrader.Gui\NinjaTrader.Gui.csproj">
+      <Project>{FB0A6AA7-1E4F-457D-9939-D3818E3BF47A}</Project>
+      <Name>NinjaTrader.Gui</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -115,7 +116,11 @@ namespace NinjaTrader.NinjaScript
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        protected T CacheIndicator<T>(T indicator, ISeries<double> input, ref T[] cache) where T : IndicatorBase => default(T);
+        protected T CacheIndicator<T>(T indicator, ISeries<double> input, ref T[] cache) where T : IndicatorBase
+        {
+            cache = cache == null ? new[] { indicator } : cache.ToList().Append(indicator).ToArray();
+            return indicator;
+        }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public override void CopyTo(NinjaTrader.NinjaScript.NinjaScript ninjaScript)

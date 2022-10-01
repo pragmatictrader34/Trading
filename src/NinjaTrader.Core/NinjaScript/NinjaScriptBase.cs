@@ -19,7 +19,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NinjaTrader.NinjaScript
 {
-    public abstract class NinjaScriptBase : NinjaTrader.NinjaScript.NinjaScript, ISeries<double>
+    public abstract partial class NinjaScriptBase : NinjaTrader.NinjaScript.NinjaScript, ISeries<double>
     {
         private BrushSeries backBrushes;
         private BrushSeries backBrushesAll;
@@ -1450,20 +1450,10 @@ namespace NinjaTrader.NinjaScript
             set => base.Name = value;
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        protected NinjaScriptBase()
-        {
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        ~NinjaScriptBase()
-        {
-        }
-
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Browsable(false)]
         [XmlIgnore]
-        public Collection<NinjaScriptBase> NinjaScripts { get; }
+        public Collection<NinjaScriptBase> NinjaScripts { get; } = new Collection<NinjaScriptBase>();
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [XmlIgnore]

@@ -91,6 +91,14 @@
     <Compile Include="Cbi\TradingHoursBreakLineVisible.cs" />
     <Compile Include="Code\Output.cs" />
     <Compile Include="Code\OutputEventArgs.cs" />
+    <Compile Include="Custom\DataSeries.cs" />
+    <Compile Include="Custom\EnumMetadataCache.cs" />
+    <Compile Include="Custom\Extensions.cs" />
+    <Compile Include="Custom\NinjaScriptBaseCustom.cs" />
+    <Compile Include="Custom\ScriptRunner.cs" />
+    <Compile Include="Custom\SeriesProvider.cs" />
+    <Compile Include="Custom\SymbolAttribute.cs" />
+    <Compile Include="Custom\SymbolType.cs" />
     <Compile Include="Data\Bar.cs" />
     <Compile Include="Data\Bars.cs" />
     <Compile Include="Data\BarsBytes.cs" />
