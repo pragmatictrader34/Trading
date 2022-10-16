@@ -8,6 +8,7 @@ using System.Threading;
 using System.Xml.Serialization;
 using NinjaTrader.Cbi;
 using NinjaTrader.Core;
+using NinjaTrader.Core.Custom;
 
 // ReSharper disable CheckNamespace
 
@@ -15,6 +16,8 @@ namespace NinjaTrader.Data
 {
     public sealed class BarsSeries : IDisposable
     {
+        public ResourceDataProvider ResourceDataProvider { get; set; }
+
         private string continuousSeriesFilename;
         internal static Collection<GetBarsParameter> DownloadFromProviderBufferedGetBars;
         internal DateTime FirstTimeRawDataSeen;
@@ -589,7 +592,7 @@ namespace NinjaTrader.Data
         private byte[] GetChunkData(int index, ref int dataIdx) => (byte[])null;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public double GetClose(int index) => 0.0;
+        public double GetClose(int index) => ResourceDataProvider.CloseSeries.GetValueAt(index);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal Bar GetDayBar(DateTime tradingDayExchange) => (Bar)null;
@@ -601,7 +604,7 @@ namespace NinjaTrader.Data
         private DateTime GetFirstTime(int index) => new DateTime();
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public double GetHigh(int index) => 0.0;
+        public double GetHigh(int index) => ResourceDataProvider.HighSeries.GetValueAt(index);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public DateTime GetSessionEndTime(int index) => new DateTime();
@@ -610,10 +613,10 @@ namespace NinjaTrader.Data
         public bool GetIsFirstBarOfSession(int index) => false;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public double GetLow(int index) => 0.0;
+        public double GetLow(int index) => ResourceDataProvider.LowSeries.GetValueAt(index);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public double GetOpen(int index) => 0.0;
+        public double GetOpen(int index) => ResourceDataProvider.OpenSeries.GetValueAt(index);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal string GetBarTestString(int index, bool ignoreIndex) => (string)null;
@@ -622,10 +625,10 @@ namespace NinjaTrader.Data
         internal double GetTickSize(int index) => 0.0;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public long GetVolume(int index) => 0;
+        public long GetVolume(int index) => ResourceDataProvider.VolumeSeries.GetValueAt(index);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public DateTime GetTime(int index) => new DateTime();
+        public DateTime GetTime(int index) => ResourceDataProvider.TimeSeries.GetValueAt(index);
 
         [Browsable(false)]
         public string Id { get; set; }

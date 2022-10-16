@@ -43,12 +43,7 @@ namespace NinjaTrader.NinjaScript
         public virtual double this[int barsAgo]
         {
             [MethodImpl(MethodImplOptions.NoInlining)]
-            get => 0.0;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static VolumeSeries()
-        {
+            get => this.Bars.GetVolume(Bars.CurrentBar - barsAgo);
         }
     }
 }

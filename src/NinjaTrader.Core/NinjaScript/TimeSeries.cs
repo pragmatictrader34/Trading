@@ -44,12 +44,7 @@ namespace NinjaTrader.NinjaScript
         public virtual DateTime this[int barsAgo]
         {
             [MethodImpl(MethodImplOptions.NoInlining)]
-            get => new DateTime();
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static TimeSeries()
-        {
+            get => Bars.GetTime(Bars.CurrentBar - barsAgo);
         }
     }
 }

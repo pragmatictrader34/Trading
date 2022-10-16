@@ -7,13 +7,13 @@ namespace NinjaTrader.NinjaScript
 {
     public class PriceSeries : ISeries<double>
     {
-        public Bars Bars { get; set; }
+        public Bars Bars { get; }
 
-        public int Count { get; }
+        public int Count => Bars.Count;
 
         public string Name { get; }
 
-        public double GetValueAt(int barIndex) => 0.0;
+        public double GetValueAt(int barIndex) => this.Bars.GetValueAt(barIndex);
 
         public bool IsValidDataPoint(int barsAgo) => this.Bars.IsValidDataPoint(barsAgo);
 
@@ -21,6 +21,8 @@ namespace NinjaTrader.NinjaScript
 
         public PriceSeries(Bars bars, PriceType priceType)
         {
+            Bars = bars;
+            PriceType = priceType;
         }
 
         public PriceType PriceType { get; set; }
@@ -29,7 +31,21 @@ namespace NinjaTrader.NinjaScript
         {
             get
             {
-                throw new NotImplementedException();
+                var index = Bars.CurrentBar - barsAgo;
+
+                if (PriceType == PriceType.Open)
+                    return Bars.GetOpen(index);
+
+                if (PriceType == PriceType.High)
+                    return Bars.GetHigh(index);
+
+                if (PriceType == PriceType.Low)
+                    return Bars.GetLow(index);
+
+                if (PriceType == PriceType.Close)
+                    return Bars.GetClose(index);
+
+                throw new NotSupportedException();
             }
         }
     }

@@ -10,6 +10,10 @@ namespace NinjaTrader.Custom.UnitTests
         {
             RecordedTimes = new List<DateTime>();
             RecordedOpens = new List<double>();
+            RecordedHighs = new List<double>();
+            RecordedLows = new List<double>();
+            RecordedCloses = new List<double>();
+            RecordedVolumes = new List<double>();
         }
     
         public List<DateTime> RecordedTimes { get; }

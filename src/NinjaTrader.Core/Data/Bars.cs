@@ -206,6 +206,9 @@ namespace NinjaTrader.Data
           DateTime to,
           TradingHours tradingHours)
         {
+            BarsSeries = new BarsSeries(instrument, period, from, to, tradingHours);
+            FromDate = from;
+            ToDate = to;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -248,11 +251,7 @@ namespace NinjaTrader.Data
         {
         }
 
-        public int Count
-        {
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            get => 0;
-        }
+        public int Count => BarsSeries.ResourceDataProvider.Count;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public int CurrentBar { get; set; }
@@ -325,7 +324,7 @@ namespace NinjaTrader.Data
         /// <param name="index">An int which represents an absolute bar index value</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public double GetClose(int index) => 0.0;
+        public double GetClose(int index) => BarsSeries.ResourceDataProvider.CloseSeries[CurrentBar - index];
 
         /// <summary>
         /// Returns the high price at the selected current bar index value.
@@ -333,7 +332,7 @@ namespace NinjaTrader.Data
         /// <param name="index">An int which represents an absolute bar index value</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public double GetHigh(int index) => 0.0;
+        public double GetHigh(int index) => BarsSeries.ResourceDataProvider.HighSeries[CurrentBar - index];
 
         public int GetIndexByTime() => 0;
 
@@ -351,7 +350,7 @@ namespace NinjaTrader.Data
         /// <param name="index">An int which represents an absolute bar index value</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public double GetLow(int index) => 0.0;
+        public double GetLow(int index) => BarsSeries.ResourceDataProvider.LowSeries[CurrentBar - index];
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static Bars GetNewBarsProxy(Bars barsProxy) => (Bars)null;
@@ -362,7 +361,7 @@ namespace NinjaTrader.Data
         /// <param name="index">An int which represents an absolute bar index value</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public double GetOpen(int index) => 0.0;
+        public double GetOpen(int index) => BarsSeries.ResourceDataProvider.OpenSeries[CurrentBar - index];
 
         /// <summary>
         /// Returns the time stamp at the selected current bar index value.
@@ -370,7 +369,7 @@ namespace NinjaTrader.Data
         /// <param name="index">An int which represents an absolute bar index value</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public DateTime GetTime(int index) => new DateTime();
+        public DateTime GetTime(int index) => BarsSeries.ResourceDataProvider.TimeSeries[CurrentBar - index];
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public double GetValueAt(int barIndex) => this.GetClose(barIndex);
@@ -381,7 +380,7 @@ namespace NinjaTrader.Data
         /// <param name="index">An int which represents an absolute bar index value</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public long GetVolume(int index) => 0;
+        public long GetVolume(int index) => BarsSeries.ResourceDataProvider.VolumeSeries[CurrentBar - index];
 
         public Instrument Instrument => this.BarsSeries.Instrument;
 

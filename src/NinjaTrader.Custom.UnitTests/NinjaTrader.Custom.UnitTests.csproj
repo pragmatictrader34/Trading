@@ -101,9 +101,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FakeDataProvider.cs" />
     <Compile Include="ScriptRunnerTestStrategy.cs" />
     <Compile Include="ScriptRunnerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptRunnerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

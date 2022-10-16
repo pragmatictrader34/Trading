@@ -1,16 +1,23 @@
 ﻿using System;
+using System.Linq;
 using NinjaTrader.NinjaScript;
 
 namespace NinjaTrader.Core.Custom
 {
-    public class ScriptRunner
+    public class ScriptRunner<TScript> where TScript : NinjaScriptBase, new()
     {
-        public ScriptRunner(NinjaScriptBase script)
+        private int _barsInProgress;
+        private int _currentBar;
+
+        public ScriptRunner(params DataProvider[] dataProviders)
         {
-            Script = script;
+            Script = new TScript
+            {
+                DataProviders = dataProviders ?? new DataProvider[] { }
+            };
         }
 
-        public NinjaScriptBase Script { get; }
+        public TScript Script { get; }
 
         public DateTime Start { get; set; }
 
@@ -22,7 +29,13 @@ namespace NinjaTrader.Core.Custom
 
             Script.TriggerStateChange(State.SetDefaults);
             Script.TriggerStateChange(State.Configure);
+
             Script.TriggerStateChange(State.DataLoaded);
+
+            for (_barsInProgress = 0; _barsInProgress < Script.DataProviders.Length; _barsInProgress++)
+            {
+                Script.TriggerOnBarUpdate(_barsInProgress, _currentBar);
+            }
         }
 
         private void ThrowIfPreconditionsViolated()
