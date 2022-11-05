@@ -72,10 +72,18 @@ namespace NinjaTrader.Custom.UnitTests
             // Arrange
             var dataProvider = CreateDataProvider();
             var scriptRunner = ScriptRunnerFactory.Create<ScriptRunnerTestStrategy>(
-                start: new DateTime(2022, 2, 1), end: new DateTime(2022, 2, 10), dataProvider);
+                start: new DateTime(2022, 10, 3), end: new DateTime(2022, 10, 3), dataProvider);
 
             // Act
             scriptRunner.Run();
+
+            // Assert
+            scriptRunner.Script.RecordedOpens.Should().Equal(dataProvider.OpenSeries.Values);
+            scriptRunner.Script.RecordedHighs.Should().Equal(dataProvider.HighSeries.Values);
+            scriptRunner.Script.RecordedLows.Should().Equal(dataProvider.LowSeries.Values);
+            scriptRunner.Script.RecordedCloses.Should().Equal(dataProvider.CloseSeries.Values);
+            scriptRunner.Script.RecordedVolumes.Should().Equal(dataProvider.VolumeSeries.Values);
+            scriptRunner.Script.RecordedTimes.Should().Equal(dataProvider.TimeStampSeries.Values);
         }
 
         private FakeDataProvider CreateDataProvider()

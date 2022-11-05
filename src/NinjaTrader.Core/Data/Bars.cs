@@ -380,7 +380,7 @@ namespace NinjaTrader.Data
         /// <param name="index">An int which represents an absolute bar index value</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public long GetVolume(int index) => BarsSeries.ResourceDataProvider.VolumeSeries[CurrentBar - index];
+        public long GetVolume(int index) => (long)BarsSeries.ResourceDataProvider.VolumeSeries[CurrentBar - index];
 
         public Instrument Instrument => this.BarsSeries.Instrument;
 

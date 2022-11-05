@@ -625,7 +625,7 @@ namespace NinjaTrader.Data
         internal double GetTickSize(int index) => 0.0;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public long GetVolume(int index) => ResourceDataProvider.VolumeSeries.GetValueAt(index);
+        public long GetVolume(int index) => (long)ResourceDataProvider.VolumeSeries.GetValueAt(index);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public DateTime GetTime(int index) => ResourceDataProvider.TimeSeries.GetValueAt(index);

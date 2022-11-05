@@ -6,7 +6,7 @@ namespace NinjaTrader.Core.Custom
     public class ResourceDataProvider
     {
         public ResourceDataProvider(ISeries<double> openSeries, ISeries<double> highSeries,
-            ISeries<double> lowSeries, ISeries<double> closeSeries, ISeries<long> volumeSeries,
+            ISeries<double> lowSeries, ISeries<double> closeSeries, ISeries<double> volumeSeries,
             ISeries<DateTime> timeSeries)
         {
             OpenSeries = openSeries;
@@ -27,7 +27,7 @@ namespace NinjaTrader.Core.Custom
 
         public ISeries<double> CloseSeries { get; }
 
-        public ISeries<long> VolumeSeries { get; }
+        public ISeries<double> VolumeSeries { get; }
 
         public ISeries<DateTime> TimeSeries { get; }
     }

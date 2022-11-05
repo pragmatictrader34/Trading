@@ -10,7 +10,14 @@ namespace NinjaTrader.Core.Custom
         {
         }
 
+        public override DateTime CurrentTimeStamp => throw new NotImplementedException();
+
         public override ResourceDataProvider GetResourceDataProvider(TradingResource resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MoveToDateTime(DateTime dateTime)
         {
             throw new NotImplementedException();
         }
