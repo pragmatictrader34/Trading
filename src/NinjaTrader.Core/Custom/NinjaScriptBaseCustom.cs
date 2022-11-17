@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NinjaTrader.Cbi;
 using NinjaTrader.Core.Custom;
@@ -55,8 +54,7 @@ namespace NinjaTrader.NinjaScript
 
         private ResourceDataProvider GetResourceDataProvider(int index)
         {
-            var resource = new TradingResource(Instruments[index], BarsPeriods[index], From, To);
-            var provider = DataProviders[index].GetResourceDataProvider(resource);
+            var provider = DataProviders[index].GetResourceDataProvider();
             return provider;
         }
 

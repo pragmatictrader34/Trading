@@ -12,13 +12,11 @@ namespace NinjaTrader.Custom.UnitTests
         public FakeDataProvider(SymbolType symbolType, BarsPeriodType periodType, int period)
             : base(symbolType, periodType, period)
         {
-            CurrentIndex = -1;
-
             OpenSeries = new FakeSeries<double>(this);
             HighSeries = new FakeSeries<double>(this);
             LowSeries = new FakeSeries<double>(this);
             CloseSeries = new FakeSeries<double>(this);
-            TimeStampSeries = new FakeSeries<DateTime>(this);
+            TimestampSeries = new FakeSeries<DateTime>(this);
             VolumeSeries = new FakeSeries<double>(this);
         }
 
@@ -32,7 +30,7 @@ namespace NinjaTrader.Custom.UnitTests
 
         public FakeSeries<double> CloseSeries { get; }
 
-        public FakeSeries<DateTime> TimeStampSeries { get; }
+        public FakeSeries<DateTime> TimestampSeries { get; }
 
         public FakeSeries<double> VolumeSeries { get; }
 
@@ -42,22 +40,22 @@ namespace NinjaTrader.Custom.UnitTests
             HighSeries.Add(high);
             LowSeries.Add(low);
             CloseSeries.Add(close);
-            TimeStampSeries.Add(dateTime);
+            TimestampSeries.Add(dateTime);
             VolumeSeries.Add(volume);
         }
 
-        public override DateTime CurrentTimeStamp =>
-            TimeStampSeries.Values.ElementAtOrDefault(InitialIndex + CurrentIndex);
+        public override DateTime CurrentTimestamp =>
+            TimestampSeries.Values.ElementAtOrDefault(InitialIndex + CurrentIndex);
 
-        public override ResourceDataProvider GetResourceDataProvider(TradingResource resource)
+        public override ResourceDataProvider GetResourceDataProvider()
         {
             return new ResourceDataProvider(
-                OpenSeries, HighSeries, LowSeries, CloseSeries, VolumeSeries, TimeStampSeries);
+                OpenSeries, HighSeries, LowSeries, CloseSeries, VolumeSeries, TimestampSeries);
         }
 
-        public override void MoveToDateTime(DateTime dateTime)
+        public override void MoveToDateTime(DateTime dateTime, DateTime from, DateTime to)
         {
-            var i = TimeStampSeries.Values.FindIndex(_ => _ >= dateTime);
+            var i = TimestampSeries.Values.FindIndex(_ => _ >= dateTime);
 
             if (CurrentIndex == -1)
                 InitialIndex = i;

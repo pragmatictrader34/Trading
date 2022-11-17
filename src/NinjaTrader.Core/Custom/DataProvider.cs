@@ -20,15 +20,15 @@ namespace NinjaTrader.Core.Custom
 
         public DataSeries DataSeries => new DataSeries(SymbolType, PeriodType, Period);
 
-        public int CurrentIndex { get; protected set; }
+        public int CurrentIndex { get; protected set; } = -1;
 
-        public abstract DateTime CurrentTimeStamp { get; }
+        public abstract DateTime CurrentTimestamp { get; }
 
         public string ResourceDescription => $"{SymbolType.GetName()} ({PeriodType} resolution)";
 
-        public abstract ResourceDataProvider GetResourceDataProvider(TradingResource resource);
+        public abstract ResourceDataProvider GetResourceDataProvider();
 
-        public abstract void MoveToDateTime(DateTime dateTime);
+        public abstract void MoveToDateTime(DateTime dateTime, DateTime from, DateTime to);
 
         public TimeSpan GetTimeSpan()
         {

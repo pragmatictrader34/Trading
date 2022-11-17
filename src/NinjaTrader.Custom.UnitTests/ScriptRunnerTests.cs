@@ -83,7 +83,7 @@ namespace NinjaTrader.Custom.UnitTests
             scriptRunner.Script.RecordedLows.Should().Equal(dataProvider.LowSeries.Values);
             scriptRunner.Script.RecordedCloses.Should().Equal(dataProvider.CloseSeries.Values);
             scriptRunner.Script.RecordedVolumes.Should().Equal(dataProvider.VolumeSeries.Values);
-            scriptRunner.Script.RecordedTimes.Should().Equal(dataProvider.TimeStampSeries.Values);
+            scriptRunner.Script.RecordedTimes.Should().Equal(dataProvider.TimestampSeries.Values);
         }
 
         private FakeDataProvider CreateDataProvider()

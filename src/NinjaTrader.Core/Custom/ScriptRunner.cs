@@ -132,11 +132,11 @@ namespace NinjaTrader.Core.Custom
                 var dataProvider = Script.DataProviders[i];
                 SetCurrentDataProviderIndex(dataProvider, settingInitialIndex:true);
 
-                if (minDateTime > dataProvider.CurrentTimeStamp)
-                    minDateTime = dataProvider.CurrentTimeStamp;
+                if (minDateTime > dataProvider.CurrentTimestamp)
+                    minDateTime = dataProvider.CurrentTimestamp;
 
-                if (maxDateTime < dataProvider.CurrentTimeStamp)
-                    maxDateTime = dataProvider.CurrentTimeStamp;
+                if (maxDateTime < dataProvider.CurrentTimestamp)
+                    maxDateTime = dataProvider.CurrentTimestamp;
 
                 if (minDateTime.Date > _currentDateTime.Date.AddDays(2))
                     throw NoResourceDataOnDate(dataProvider.ResourceDescription, _currentDateTime);
@@ -168,7 +168,7 @@ namespace NinjaTrader.Core.Custom
 
         private void SetCurrentDataProviderIndex(DataProvider dataProvider, bool settingInitialIndex)
         {
-            dataProvider.MoveToDateTime(_currentDateTime);
+            dataProvider.MoveToDateTime(_currentDateTime, Start, End);
 
             if (dataProvider.CurrentIndex >= 0)
                 return;
