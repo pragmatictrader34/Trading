@@ -152,6 +152,8 @@ namespace NinjaTrader.Core.Custom
 
         private void IncrementTimeAndSecurityIndices()
         {
+            _currentDateTime = Script.DataProviders.Min(_ => _.CurrentTimestamp);
+
             if (_minimalPeriodType == BarsPeriodType.Month)
                 _currentDateTime = _currentDateTime.AddMonths(1);
             else if (_minimalPeriodType == BarsPeriodType.Year)
@@ -168,12 +170,17 @@ namespace NinjaTrader.Core.Custom
 
         private void SetCurrentDataProviderIndex(DataProvider dataProvider, bool settingInitialIndex)
         {
-            dataProvider.MoveToDateTime(_currentDateTime, Start, End);
+            var dateTime = _currentDateTime;
+
+            if (settingInitialIndex && dataProvider.PeriodType == BarsPeriodType.Minute)
+                dateTime = dateTime.AddMinutes(1);
+
+            dataProvider.MoveToDateTime(dateTime, Start, End);
 
             if (dataProvider.CurrentIndex >= 0)
                 return;
 
-            if (settingInitialIndex || _currentDateTime.Date < End.Date)
+            if (settingInitialIndex || dateTime.Date < End.Date)
                 throw NoResourceDataAfterDate(dataProvider.ResourceDescription, _currentDateTime);
         }
 
