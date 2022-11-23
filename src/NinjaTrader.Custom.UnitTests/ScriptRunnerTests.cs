@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NinjaTrader.Core.Custom;
 using NinjaTrader.Data;
@@ -67,7 +68,7 @@ namespace NinjaTrader.Custom.UnitTests
         }
 
         [Fact]
-        public void Test()
+        public void Run_ExecutedWithFakeData_SuppliesFakeValuesToStrategy()
         {
             // Arrange
             var dataProvider = CreateDataProvider();
@@ -84,6 +85,54 @@ namespace NinjaTrader.Custom.UnitTests
             scriptRunner.Script.RecordedCloses.Should().Equal(dataProvider.CloseSeries.Values);
             scriptRunner.Script.RecordedVolumes.Should().Equal(dataProvider.VolumeSeries.Values);
             scriptRunner.Script.RecordedTimes.Should().Equal(dataProvider.TimestampSeries.Values);
+        }
+
+        [Fact]
+        public void Run_ExecutedWithCachedMinuteData_SuppliesProperValuesToStrategy()
+        {
+            // Arrange
+            var dataProvider = new LocalFileCacheDataProvider(SymbolType.EurUsd, BarsPeriodType.Minute, period: 1);
+
+            var scriptRunner = ScriptRunnerFactory.Create<ScriptRunnerTestStrategy>(
+                start: new DateTime(2022, 09, 28), end: new DateTime(2022, 09, 29), dataProvider);
+
+            var firstExpectedOpens = new[] { 0.95909, 0.95919, 0.95877, 0.95879 };
+            var firstExpectedHighs = new[] { 0.95919, 0.95919, 0.95877, 0.9589 };
+            var firstExpectedLows = new[] { 0.95909, 0.95875, 0.95877, 0.95879 };
+            var firstExpectedCloses = new[] { 0.95919, 0.95877, 0.95877, 0.9589 };
+            var firstExpectedVolumes = new[] { 9.0, 5.0, 2.0, 8.0 };
+            var firstExpectedTimes = new[]
+            {
+                "27.09.2022 23:01:00", "27.09.2022 23:02:00", "27.09.2022 23:04:00", "27.09.2022 23:05:00"
+            }.ConvertToDateTimes();
+
+            var lastExpectedOpens = new[] { 0.98078, 0.98098, 0.98115, 0.98139 };
+            var lastExpectedHighs = new[] { 0.981, 0.98121, 0.98146, 0.9815 };
+            var lastExpectedLows = new[] { 0.98077, 0.98097, 0.98111, 0.98125 };
+            var lastExpectedCloses = new[] { 0.98098, 0.98116, 0.98143, 0.98126 };
+            var lastExpectedVolumes = new[] { 172.0, 226.0, 199.0, 174.0 };
+            var lastExpectedTimes = new[]
+            {
+                "29.09.2022 22:56:00", "29.09.2022 22:57:00", "29.09.2022 22:58:00", "29.09.2022 22:59:00"
+            }.ConvertToDateTimes();
+
+            // Act
+            scriptRunner.Run();
+
+            // Assert
+            scriptRunner.Script.RecordedOpens.Should().StartWith(firstExpectedOpens);
+            scriptRunner.Script.RecordedHighs.Should().StartWith(firstExpectedHighs);
+            scriptRunner.Script.RecordedLows.Should().StartWith(firstExpectedLows);
+            scriptRunner.Script.RecordedCloses.Should().StartWith(firstExpectedCloses);
+            scriptRunner.Script.RecordedVolumes.Should().StartWith(firstExpectedVolumes);
+            scriptRunner.Script.RecordedTimes.Should().StartWith(firstExpectedTimes);
+
+            scriptRunner.Script.RecordedOpens.Should().EndWith(lastExpectedOpens);
+            scriptRunner.Script.RecordedHighs.Should().EndWith(lastExpectedHighs);
+            scriptRunner.Script.RecordedLows.Should().EndWith(lastExpectedLows);
+            scriptRunner.Script.RecordedCloses.Should().EndWith(lastExpectedCloses);
+            scriptRunner.Script.RecordedVolumes.Should().EndWith(lastExpectedVolumes);
+            scriptRunner.Script.RecordedTimes.Should().EndWith(lastExpectedTimes);
         }
 
         private FakeDataProvider CreateDataProvider()

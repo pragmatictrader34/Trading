@@ -101,6 +101,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="FakeDataProvider.cs" />
     <Compile Include="ScriptRunnerTestStrategy.cs" />
     <Compile Include="ScriptRunnerTests.cs" />

@@ -275,7 +275,6 @@ namespace NinjaTrader.Core.Custom
                 {
                     var index = GetProperIndex(barsAgo, barsAgo: true);
                     var value = PriceValuesCollection[index].Timestamp;
-                    value = _parent.ConvertFromCacheTimeStamp(value);
                     return value;
                 }
             }
