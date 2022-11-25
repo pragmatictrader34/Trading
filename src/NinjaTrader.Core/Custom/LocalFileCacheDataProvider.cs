@@ -49,6 +49,9 @@ namespace NinjaTrader.Core.Custom
             var properStart = ConvertToCacheTimeStamp(from);
             var properEnd = ConvertToCacheTimeStamp(to);
 
+            if (PeriodType == BarsPeriodType.Minute)
+                properEnd = properEnd.AddDays(1).Date;
+
             var subDirectory = GetDirectory();
 
             var directory = Path.Combine(RootDirectory, subDirectory);

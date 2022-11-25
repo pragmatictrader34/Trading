@@ -5,6 +5,7 @@ using System.IO;
 #pragma warning disable CS1591
 // ReSharper disable CommentTypo
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
 
 namespace NinjaTrader.Core.Custom.NtdReader
 {
@@ -72,7 +73,7 @@ namespace NinjaTrader.Core.Custom.NtdReader
                         incrementCount = reader.ReadByte() - (1 << 7);
                         break;
                     case 0b11:
-                        incrementCount = (int) (reader.ReadBigEndianUInt(4) - (1 << 31));
+                        incrementCount = (int)reader.ReadBigEndianUInt(4) - (1 << 31);
                         break;
                     default:
                         throw new Exception("Unknown price flag");
@@ -178,10 +179,10 @@ namespace NinjaTrader.Core.Custom.NtdReader
                         minutes = reader.ReadByte();
                         break;
                     case 0b10:
-                        minutes = reader.ReadBigEndianUInt(2) - (1 << 15);
+                        minutes = (int)reader.ReadBigEndianUInt(2) - (1 << 15);
                         break;
                     case 0b11:
-                        minutes = reader.ReadBigEndianUInt(4) - (1 << 31);
+                        minutes = (int)reader.ReadBigEndianUInt(4) - (1 << 31);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -200,10 +201,10 @@ namespace NinjaTrader.Core.Custom.NtdReader
                         addedIntervalCount = reader.ReadByte() - (1 << 7);
                         break;
                     case 0b10:
-                        addedIntervalCount = reader.ReadBigEndianUInt(2) - (1 << 15);
+                        addedIntervalCount = (int)reader.ReadBigEndianUInt(2) - (1 << 15);
                         break;
                     case 0b11:
-                        addedIntervalCount = reader.ReadBigEndianUInt(4) - (1 << 31);
+                        addedIntervalCount = (int)reader.ReadBigEndianUInt(4) - (1 << 31);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -313,7 +314,6 @@ namespace NinjaTrader.Core.Custom.NtdReader
             using (var stream = File.Open(filePath, FileMode.Open))
             using (var reader = new BinaryReader(stream))
                 return ReadDays(stream, reader);
-
         }
 
         private static List<PriceValues> ReadDays(Stream stream, BinaryReader reader)
