@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NinjaTrader.Core.Custom;
+using NinjaTrader.Data;
 using NinjaTrader.NinjaScript;
 
 namespace NinjaTrader.Custom.UnitTests
@@ -13,11 +14,13 @@ namespace NinjaTrader.Custom.UnitTests
         {
             var runner = new ScriptRunner<TScript>(dataProviders);
 
+            var containsMinutePeriodTypes = dataProviders.Any(_ => _.PeriodType == BarsPeriodType.Minute);
+
             if (start != null)
-                runner.Start = start.Value;
+                runner.Start = containsMinutePeriodTypes ? start.Value.ToNinjaTraderTime() : start.Value.Date;
 
             if (end != null)
-                runner.End = end.Value;
+                runner.End = containsMinutePeriodTypes ? end.Value.ToNinjaTraderTime().AddDays(1) : end.Value.Date;
 
             return runner;
         }

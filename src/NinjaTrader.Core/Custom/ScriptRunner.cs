@@ -47,7 +47,7 @@ namespace NinjaTrader.Core.Custom
 
             SetSecurityStartIndices();
 
-            while (_currentDateTime.Date <= End)
+            while (_currentDateTime < End)
             {
                 for (_barsInProgress = 0; _barsInProgress < Script.DataProviders.Length; _barsInProgress++)
                     Script.TriggerOnBarUpdate(_barsInProgress, _currentBar[_barsInProgress]);

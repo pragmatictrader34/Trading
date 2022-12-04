@@ -46,17 +46,14 @@ namespace NinjaTrader.Core.Custom
 
         private IEnumerable<PriceValues> LoadPriceValues(DateTime from, DateTime to)
         {
-            var properStart = ConvertToCacheTimeStamp(from);
-            var properEnd = ConvertToCacheTimeStamp(to);
-
             if (PeriodType == BarsPeriodType.Minute)
-                properEnd = properEnd.AddDays(1).Date;
+                to = to.AddDays(1).Date;
 
             var subDirectory = GetDirectory();
 
             var directory = Path.Combine(RootDirectory, subDirectory);
 
-            foreach (var filePath in GetFilePaths(properStart, properEnd, directory))
+            foreach (var filePath in GetFilePaths(from, to, directory))
             {
                 foreach (var priceValue in GetPriceValues(filePath))
                     yield return priceValue;
@@ -171,16 +168,6 @@ namespace NinjaTrader.Core.Custom
             return new DateTime(ticks, dateTime.Kind);
         }
 
-        private DateTime ConvertToCacheTimeStamp(DateTime timestamp)
-        {
-            return timestamp.AddHours(-1);
-        }
-
-        private DateTime ConvertFromCacheTimeStamp(DateTime timestamp)
-        {
-            return timestamp.AddHours(1);
-        }
-
         private class SeriesProvider : ISeries<double>, ISeries<DateTime>
         {
             private readonly LocalFileCacheDataProvider _parent;
@@ -215,10 +202,8 @@ namespace NinjaTrader.Core.Custom
 
             private int CurrentIndex { get; set; } = -1;
 
-            private void OnCurrentTimestampChanged(DateTime dateTime)
+            private void OnCurrentTimestampChanged(DateTime timestamp)
             {
-                var timestamp = _parent.ConvertToCacheTimeStamp(dateTime);
-
                 var startIndex = CurrentIndex == -1 ? 0 : _initialIndex + CurrentIndex;
 
                 var index = PriceValuesCollection.FindIndex(startIndex, _ => _.Timestamp >= timestamp);
@@ -232,7 +217,7 @@ namespace NinjaTrader.Core.Custom
                 if (index >= 0)
                     timestamp = PriceValuesCollection[index].Timestamp;
 
-                _parent._currentTimestamp = _parent.ConvertFromCacheTimeStamp(timestamp);
+                _parent._currentTimestamp = timestamp;
             }
 
             public bool IsValidDataPoint(int barsAgo)
@@ -258,7 +243,6 @@ namespace NinjaTrader.Core.Custom
             {
                 var index = GetProperIndex(barIndex, barsAgo: false);
                 var value = PriceValuesCollection[index].Timestamp;
-                value = _parent.ConvertFromCacheTimeStamp(value);
                 return value;
             }
 
