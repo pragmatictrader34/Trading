@@ -12,7 +12,7 @@ namespace NinjaTrader.Core.Custom
     {
         private const string RootDirectory = @"C:\Users\Boris\Documents\NinjaTrader 8\db";
 
-        private event Action<DateTime> CurrentTimestampChanged;
+        private event Action<DateTime, DateTime> CurrentTimestampChanged;
 
         private DateTime _currentTimestamp;
 
@@ -141,7 +141,7 @@ namespace NinjaTrader.Core.Custom
 
             dateTime = RoundDateTime(dateTime);
 
-            CurrentTimestampChanged?.Invoke(dateTime);
+            CurrentTimestampChanged?.Invoke(dateTime, to);
         }
 
         private DateTime RoundDateTime(DateTime dateTime)
@@ -202,11 +202,19 @@ namespace NinjaTrader.Core.Custom
 
             private int CurrentIndex { get; set; } = -1;
 
-            private void OnCurrentTimestampChanged(DateTime timestamp)
+            private void OnCurrentTimestampChanged(DateTime timestamp, DateTime end)
             {
                 var startIndex = CurrentIndex == -1 ? 0 : _initialIndex + CurrentIndex;
 
                 var index = PriceValuesCollection.FindIndex(startIndex, _ => _.Timestamp >= timestamp);
+
+                if (index >= 0)
+                {
+                    var nextIndex = PriceValuesCollection.FindIndex(index + 1, _ => _.Timestamp <= end);
+
+                    if (nextIndex == -1)
+                        index = -1;
+                }
 
                 if (CurrentIndex == -1)
                     _initialIndex = index;

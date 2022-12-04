@@ -47,15 +47,12 @@ namespace NinjaTrader.Core.Custom
 
             SetSecurityStartIndices();
 
-            while (_currentDateTime < End)
+            while (!EndOfDataReached())
             {
                 for (_barsInProgress = 0; _barsInProgress < Script.DataProviders.Length; _barsInProgress++)
                     Script.TriggerOnBarUpdate(_barsInProgress, _currentBar[_barsInProgress]);
 
                 IncrementTimeAndSecurityIndices();
-
-                if (EndOfDataReached())
-                    return;
             }
         }
 
@@ -180,7 +177,7 @@ namespace NinjaTrader.Core.Custom
             if (dataProvider.CurrentIndex >= 0)
                 return;
 
-            if (settingInitialIndex || dateTime.Date < End.Date)
+            if (settingInitialIndex)
                 throw NoResourceDataAfterDate(dataProvider.ResourceDescription, _currentDateTime);
         }
 

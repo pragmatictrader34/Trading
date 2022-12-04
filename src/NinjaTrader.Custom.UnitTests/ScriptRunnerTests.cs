@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
 using NinjaTrader.Core.Custom;
 using NinjaTrader.Data;
@@ -114,6 +113,55 @@ namespace NinjaTrader.Custom.UnitTests
             var lastExpectedTimes = new[]
             {
                 "29.09.2022 22:56:00", "29.09.2022 22:57:00", "29.09.2022 22:58:00", "29.09.2022 22:59:00"
+            }.ConvertToDateTimes();
+
+            // Act
+            scriptRunner.Run();
+
+            // Assert
+            scriptRunner.Script.RecordedOpens.Should().StartWith(firstExpectedOpens);
+            scriptRunner.Script.RecordedHighs.Should().StartWith(firstExpectedHighs);
+            scriptRunner.Script.RecordedLows.Should().StartWith(firstExpectedLows);
+            scriptRunner.Script.RecordedCloses.Should().StartWith(firstExpectedCloses);
+            scriptRunner.Script.RecordedVolumes.Should().StartWith(firstExpectedVolumes);
+            scriptRunner.Script.RecordedTimes.Should().StartWith(firstExpectedTimes);
+
+            scriptRunner.Script.RecordedOpens.Should().EndWith(lastExpectedOpens);
+            scriptRunner.Script.RecordedHighs.Should().EndWith(lastExpectedHighs);
+            scriptRunner.Script.RecordedLows.Should().EndWith(lastExpectedLows);
+            scriptRunner.Script.RecordedCloses.Should().EndWith(lastExpectedCloses);
+            scriptRunner.Script.RecordedVolumes.Should().EndWith(lastExpectedVolumes);
+            scriptRunner.Script.RecordedTimes.Should().EndWith(lastExpectedTimes);
+        }
+
+        [Fact]
+        public void Run_ExecutedWithCachedDailyData_SuppliesProperValuesToStrategy()
+        {
+            // Arrange
+            var dataProvider = new LocalFileCacheDataProvider(SymbolType.EurUsd, BarsPeriodType.Day, period: 1);
+
+            var scriptRunner = ScriptRunnerFactory.Create<ScriptRunnerTestStrategy>(
+                //start: new DateTime(2020, 03, 07), end: new DateTime(2020, 03, 10), dataProvider);
+                start: new DateTime(2020, 03, 07), end: new DateTime(2021, 04, 18), dataProvider);
+
+            var firstExpectedOpens = new[] { 1.13499, 1.1429, 1.12764, 1.12695 };
+            var firstExpectedHighs = new[] { 1.14943, 1.1458, 1.13667, 1.13336 };
+            var firstExpectedLows = new[] { 1.13359, 1.12748, 1.12575, 1.10555 };
+            var firstExpectedCloses = new[] { 1.14373, 1.12799, 1.12693, 1.11845 };
+            var firstExpectedVolumes = new[] { 841265.0, 791647.0, 554804.0, 857108.0 };
+            var firstExpectedTimes = new[]
+            {
+                "09.03.2020", "10.03.2020", "11.03.2020", "12.03.2020"
+            }.ConvertToDateTimes();
+
+            var lastExpectedOpens = new[] { 1.18893, 1.19096, 1.19476, 1.19776 };
+            var lastExpectedHighs = new[] { 1.19192, 1.19558, 1.19874, 1.19932 };
+            var lastExpectedLows = new[] { 1.18713, 1.18782, 1.19456, 1.19561 };
+            var lastExpectedCloses = new[] { 1.19103, 1.19473, 1.19775, 1.19646 };
+            var lastExpectedVolumes = new[] { 145000.0, 173243.0, 153912.0, 150410.0 };
+            var lastExpectedTimes = new[]
+            {
+                "12.04.2021", "13.04.2021", "14.04.2021", "15.04.2021"
             }.ConvertToDateTimes();
 
             // Act
