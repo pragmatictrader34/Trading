@@ -103,6 +103,7 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="FakeDataProvider.cs" />
+    <Compile Include="RecordedValues.cs" />
     <Compile Include="ScriptRunnerTestStrategy.cs" />
     <Compile Include="ScriptRunnerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
