@@ -102,7 +102,7 @@ namespace NinjaTrader.Custom.UnitTests
                 FirstExpectedLows    = new[] { 0.95909, 0.95875, 0.95877, 0.95879 },
                 FirstExpectedCloses  = new[] { 0.95919, 0.95877, 0.95877, 0.9589 },
                 FirstExpectedVolumes = new[] { 9.0, 5.0, 2.0, 8.0 },
-                FirstExpectedTimes = new[]
+                FirstExpectedTimes   = new[]
                 {
                     "27.09.2022 23:01:00", "27.09.2022 23:02:00", "27.09.2022 23:04:00", "27.09.2022 23:05:00"
                 },
@@ -112,9 +112,48 @@ namespace NinjaTrader.Custom.UnitTests
                 LastExpectedLows    = new[] { 0.98077, 0.98097, 0.98111, 0.98125 },
                 LastExpectedCloses  = new[] { 0.98098, 0.98116, 0.98143, 0.98126 },
                 LastExpectedVolumes = new[] { 172.0, 226.0, 199.0, 174.0 },
-                LastExpectedTimes = new[]
+                LastExpectedTimes   = new[]
                 {
                     "29.09.2022 22:56:00", "29.09.2022 22:57:00", "29.09.2022 22:58:00", "29.09.2022 22:59:00"
+                }
+            };
+
+            // Act
+            scriptRunner.Run();
+
+            // Assert
+            Assert_RecordedValuesAreCorrect(scriptRunner, recordedValues);
+        }
+
+        [Fact]
+        public void Run_ExecutedWithCached3MinuteData_SuppliesProperValuesToStrategy()
+        {
+            // Arrange
+            var dataProvider = new LocalFileCacheDataProvider(SymbolType.EurUsd, BarsPeriodType.Minute, period: 1);
+
+            var scriptRunner = ScriptRunnerFactory.Create<ScriptRunnerTestStrategy>(
+                start: new DateTime(2022, 09, 28), end: new DateTime(2022, 09, 29), dataProvider);
+
+            var recordedValues = new RecordedValues
+            {
+                FirstExpectedOpens   = new[] { 0.95909, 0.95877, 0.95895, 0.95891 },
+                FirstExpectedHighs   = new[] { 0.95919, 0.95894, 0.95915, 0.95891 },
+                FirstExpectedLows    = new[] { 0.95875, 0.95877, 0.95894, 0.9589 },
+                FirstExpectedCloses  = new[] { 0.95877, 0.95894, 0.95894, 0.95891 },
+                FirstExpectedVolumes = new[] { 14.0, 20.0, 88.0, 22.0 },
+                FirstExpectedTimes   = new[]
+                {
+                    "27.09.2022 23:03:00", "27.09.2022 23:06:00", "27.09.2022 23:09:00", "27.09.2022 23:12:00"
+                },
+
+                LastExpectedOpens   = new[] { 0.98058, 0.98052, 0.98051, 0.98066 },
+                LastExpectedHighs   = new[] { 0.9808, 0.98064, 0.98069, 0.98121 },
+                LastExpectedLows    = new[] { 0.98044, 0.98036, 0.98044, 0.98066 },
+                LastExpectedCloses  = new[] { 0.98046, 0.98051, 0.98066, 0.98116 },
+                LastExpectedVolumes = new[] { 285.0, 370.0, 268.0, 565.0 },
+                LastExpectedTimes   = new[]
+                {
+                    "29.09.2022 22:48:00", "29.09.2022 22:51:00", "29.09.2022 22:54:00", "29.09.2022 22:57:00"
                 }
             };
 
@@ -136,19 +175,19 @@ namespace NinjaTrader.Custom.UnitTests
 
             var recordedValues = new RecordedValues
             {
-                FirstExpectedOpens = new[] {1.13499, 1.1429, 1.12764, 1.12695},
-                FirstExpectedHighs = new[] {1.14943, 1.1458, 1.13667, 1.13336},
-                FirstExpectedLows = new[] {1.13359, 1.12748, 1.12575, 1.10555},
-                FirstExpectedCloses = new[] {1.14373, 1.12799, 1.12693, 1.11845},
-                FirstExpectedVolumes = new[] {841265.0, 791647.0, 554804.0, 857108.0},
-                FirstExpectedTimes = new[] {"09.03.2020", "10.03.2020", "11.03.2020", "12.03.2020"},
+                FirstExpectedOpens   = new[] { 1.13499, 1.1429, 1.12764, 1.12695 },
+                FirstExpectedHighs   = new[] { 1.14943, 1.1458, 1.13667, 1.13336 },
+                FirstExpectedLows    = new[] { 1.13359, 1.12748, 1.12575, 1.10555 },
+                FirstExpectedCloses  = new[] { 1.14373, 1.12799, 1.12693, 1.11845 },
+                FirstExpectedVolumes = new[] { 841265.0, 791647.0, 554804.0, 857108.0 },
+                FirstExpectedTimes   = new[] { "09.03.2020", "10.03.2020", "11.03.2020", "12.03.2020" },
 
-                LastExpectedOpens = new[] {1.18893, 1.19096, 1.19476, 1.19776},
-                LastExpectedHighs = new[] {1.19192, 1.19558, 1.19874, 1.19932},
-                LastExpectedLows = new[] {1.18713, 1.18782, 1.19456, 1.19561},
-                LastExpectedCloses = new[] {1.19103, 1.19473, 1.19775, 1.19646},
-                LastExpectedVolumes = new[] {145000.0, 173243.0, 153912.0, 150410.0},
-                LastExpectedTimes = new[] { "12.04.2021", "13.04.2021", "14.04.2021", "15.04.2021" }
+                LastExpectedOpens   = new[] { 1.18893, 1.19096, 1.19476, 1.19776 },
+                LastExpectedHighs   = new[] { 1.19192, 1.19558, 1.19874, 1.19932 },
+                LastExpectedLows    = new[] { 1.18713, 1.18782, 1.19456, 1.19561 },
+                LastExpectedCloses  = new[] { 1.19103, 1.19473, 1.19775, 1.19646 },
+                LastExpectedVolumes = new[] { 145000.0, 173243.0, 153912.0, 150410.0 },
+                LastExpectedTimes   = new[] { "12.04.2021", "13.04.2021", "14.04.2021", "15.04.2021" }
             };
 
             // Act
