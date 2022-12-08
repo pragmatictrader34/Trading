@@ -22,7 +22,7 @@ namespace NinjaTrader.Core.Custom
 
         public int CurrentIndex { get; protected set; } = -1;
 
-        public abstract DateTime CurrentTimestamp { get; }
+        public DateTime CurrentTimestamp { get; protected set; }
 
         public string ResourceDescription => $"{SymbolType.GetName()} ({PeriodType} resolution)";
 

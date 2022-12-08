@@ -12,10 +12,6 @@ namespace NinjaTrader.Core.Custom
     {
         private const string RootDirectory = @"C:\Users\Boris\Documents\NinjaTrader 8\db";
 
-        private event Action<DateTime, DateTime> CurrentTimestampChanged;
-
-        private DateTime _currentTimestamp;
-
         private ResourceDataProvider _resourceDataProvider;
 
         public LocalFileCacheDataProvider(SymbolType symbolType, BarsPeriodType periodType, int period)
@@ -23,7 +19,7 @@ namespace NinjaTrader.Core.Custom
         {
         }
 
-        public override DateTime CurrentTimestamp => _currentTimestamp;
+        private int InitialIndex { get; set; }
 
         public List<PriceValues> PriceValuesCollection { get; private set; }
 
@@ -141,7 +137,27 @@ namespace NinjaTrader.Core.Custom
 
             dateTime = RoundDateTime(dateTime);
 
-            CurrentTimestampChanged?.Invoke(dateTime, to);
+            var startIndex = CurrentIndex == -1 ? 0 : InitialIndex + CurrentIndex;
+
+            var index = PriceValuesCollection.FindIndex(startIndex, _ => _.Timestamp >= dateTime);
+
+            if (index >= 0)
+            {
+                var nextIndex = PriceValuesCollection.FindIndex(index + 1, _ => _.Timestamp <= to);
+
+                if (nextIndex == -1)
+                    index = -1;
+            }
+
+            if (CurrentIndex == -1)
+                InitialIndex = index;
+
+            CurrentIndex = index == -1 ? -1 : index - InitialIndex;
+
+            if (index >= 0)
+                dateTime = PriceValuesCollection[index].Timestamp;
+
+            CurrentTimestamp = dateTime;
         }
 
         private DateTime RoundDateTime(DateTime dateTime)
@@ -172,13 +188,11 @@ namespace NinjaTrader.Core.Custom
         {
             private readonly LocalFileCacheDataProvider _parent;
             private readonly Func<PriceValues, double> _valueSelector;
-            private int _initialIndex;
 
             public SeriesProvider(LocalFileCacheDataProvider parent, Func<PriceValues, double> valueSelector)
             {
                 _parent = parent;
                 _valueSelector = valueSelector;
-                _parent.CurrentTimestampChanged += OnCurrentTimestampChanged;
             }
 
             private List<PriceValues> PriceValuesCollection
@@ -199,34 +213,6 @@ namespace NinjaTrader.Core.Custom
             }
 
             public int Count => PriceValuesCollection.Count;
-
-            private int CurrentIndex { get; set; } = -1;
-
-            private void OnCurrentTimestampChanged(DateTime timestamp, DateTime end)
-            {
-                var startIndex = CurrentIndex == -1 ? 0 : _initialIndex + CurrentIndex;
-
-                var index = PriceValuesCollection.FindIndex(startIndex, _ => _.Timestamp >= timestamp);
-
-                if (index >= 0)
-                {
-                    var nextIndex = PriceValuesCollection.FindIndex(index + 1, _ => _.Timestamp <= end);
-
-                    if (nextIndex == -1)
-                        index = -1;
-                }
-
-                if (CurrentIndex == -1)
-                    _initialIndex = index;
-
-                CurrentIndex = index == -1 ? -1 : index - _initialIndex;
-                _parent.CurrentIndex = CurrentIndex;
-
-                if (index >= 0)
-                    timestamp = PriceValuesCollection[index].Timestamp;
-
-                _parent._currentTimestamp = timestamp;
-            }
 
             public bool IsValidDataPoint(int barsAgo)
             {
@@ -278,12 +264,12 @@ namespace NinjaTrader.Core.Custom
             {
                 if (barsAgo)
                 {
-                    var properIndex = _initialIndex + CurrentIndex - index;
+                    var properIndex = _parent.InitialIndex + _parent.CurrentIndex - index;
                     return properIndex;
                 }
                 else
                 {
-                    var properIndex = index + CurrentIndex;
+                    var properIndex = index + _parent.CurrentIndex;
                     return properIndex;
                 }
             }

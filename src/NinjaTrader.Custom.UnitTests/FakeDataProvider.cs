@@ -44,9 +44,6 @@ namespace NinjaTrader.Custom.UnitTests
             VolumeSeries.Add(volume);
         }
 
-        public override DateTime CurrentTimestamp =>
-            TimestampSeries.Values.ElementAtOrDefault(InitialIndex + CurrentIndex);
-
         public override ResourceDataProvider GetResourceDataProvider()
         {
             return new ResourceDataProvider(
@@ -61,6 +58,8 @@ namespace NinjaTrader.Custom.UnitTests
                 InitialIndex = i;
 
             CurrentIndex = i == -1 ? -1 : CurrentIndex + 1;
+
+            CurrentTimestamp = TimestampSeries.Values.ElementAtOrDefault(InitialIndex + CurrentIndex);
         }
 
         public class FakeSeries<TValue> : ISeries<TValue>
