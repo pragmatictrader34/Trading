@@ -68,7 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MarketAnalyzerColumns\%40MarketAnalyzerColumn.cs" />
-    <Compile Include="ResourceEnumConverter.cs" />
     <Compile Include="DrawingTools\%40ChartMarkers.cs" />
     <Compile Include="Indicators\%40MIN.cs" />
     <Compile Include="Indicators\%40MAX.cs" />
@@ -113,9 +112,7 @@
       <Name>NinjaTrader.Gui</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DrawingTools\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

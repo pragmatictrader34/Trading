@@ -129,7 +129,7 @@ namespace NinjaTrader.Custom.UnitTests
         public void Run_ExecutedWithCached3MinuteData_SuppliesProperValuesToStrategy()
         {
             // Arrange
-            var dataProvider = new LocalFileCacheDataProvider(SymbolType.EurUsd, BarsPeriodType.Minute, period: 1);
+            var dataProvider = new LocalFileCacheDataProvider(SymbolType.EurUsd, BarsPeriodType.Minute, period: 3);
 
             var scriptRunner = ScriptRunnerFactory.Create<ScriptRunnerTestStrategy>(
                 start: new DateTime(2022, 09, 28), end: new DateTime(2022, 09, 29), dataProvider);

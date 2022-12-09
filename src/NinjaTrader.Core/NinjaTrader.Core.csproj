@@ -100,6 +100,7 @@
     <Compile Include="Custom\NtdReader\PriceValues.cs" />
     <Compile Include="Custom\NtdReader\TickValues.cs" />
     <Compile Include="Custom\NtdReader\Reader.cs" />
+    <Compile Include="Custom\Range.cs" />
     <Compile Include="Custom\ResourceDataProvider.cs" />
     <Compile Include="Custom\ScriptRunner.cs" />
     <Compile Include="Custom\DataProvider.cs" />
