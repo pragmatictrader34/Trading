@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using NinjaTrader.Core.FloatingPoint;
-using NinjaTrader.Data;
 using NinjaTrader.NinjaScript;
 
 namespace NinjaTrader.Core.Custom
@@ -12,8 +9,6 @@ namespace NinjaTrader.Core.Custom
         private int _barsInProgress;
         private readonly int[] _currentBar;
         private DateTime _currentDateTime;
-        private long _ticksIncrement;
-        private BarsPeriodType _minimalPeriodType;
 
         public ScriptRunner(params DataProvider[] dataProviders)
         {
@@ -42,9 +37,6 @@ namespace NinjaTrader.Core.Custom
 
             _currentDateTime = Start;
 
-            _ticksIncrement = GetTicksIncrement();
-            _minimalPeriodType = GetMinimalPeriodType();
-
             SetSecurityStartIndices();
 
             while (!EndOfDataReached())
@@ -54,55 +46,6 @@ namespace NinjaTrader.Core.Custom
 
                 IncrementTimeAndSecurityIndices();
             }
-        }
-
-        private BarsPeriodType GetMinimalPeriodType()
-        {
-            var orderedTypes = new List<BarsPeriodType>
-            {
-                BarsPeriodType.Tick,
-                BarsPeriodType.Second,
-                BarsPeriodType.Minute,
-                BarsPeriodType.Day,
-                BarsPeriodType.Week,
-                BarsPeriodType.Month,
-                BarsPeriodType.Year
-            };
-
-            var index = orderedTypes.Count - 1;
-
-            foreach (var dataProvider in Script.DataProviders)
-            {
-                var i = orderedTypes.IndexOf(dataProvider.PeriodType);
-
-                if (i < index)
-                    index = i;
-            }
-
-            return orderedTypes[index];
-        }
-
-        private long GetTicksIncrement()
-        {
-            var ticks = new List<long>();
-
-            foreach (var dataProvider in Script.DataProviders)
-            {
-                if (dataProvider.PeriodType == BarsPeriodType.Month)
-                    continue;
-
-                if (dataProvider.PeriodType == BarsPeriodType.Year)
-                    continue;
-
-                ticks.Add(dataProvider.GetTimeSpan().Ticks);
-            }
-
-            if (ticks.Count <= 1)
-                return ticks.ElementAtOrDefault(0);
-
-            var gcd = ticks.Aggregate(MathExtentions.GreatestCommonDivisor);
-
-            return gcd;
         }
 
         private void ThrowIfPreconditionsViolated()
@@ -151,12 +94,9 @@ namespace NinjaTrader.Core.Custom
         {
             _currentDateTime = Script.DataProviders.Min(_ => _.CurrentTimestamp);
 
-            if (_minimalPeriodType == BarsPeriodType.Month)
-                _currentDateTime = _currentDateTime.AddMonths(1);
-            else if (_minimalPeriodType == BarsPeriodType.Year)
-                _currentDateTime = _currentDateTime.AddYears(1);
-            else
-                _currentDateTime = _currentDateTime.AddTicks(_ticksIncrement);
+            var interval = Script.DataProviders.Min(_ => _.GetTimeSpan(_currentDateTime));
+
+            _currentDateTime = _currentDateTime.Add(interval);
 
             if (_currentDateTime.Date > End)
                 return;
@@ -167,17 +107,9 @@ namespace NinjaTrader.Core.Custom
 
         private void SetCurrentDataProviderIndex(DataProvider dataProvider, bool settingInitialIndex)
         {
-            var dateTime = _currentDateTime;
+            dataProvider.MoveNext(_currentDateTime, new Range<DateTime>(Start, End));
 
-            if (settingInitialIndex && dataProvider.PeriodType == BarsPeriodType.Minute)
-                dateTime = dateTime.AddMinutes(1);
-
-            dataProvider.MoveToDateTime(dateTime, Start, End);
-
-            if (dataProvider.CurrentIndex >= 0)
-                return;
-
-            if (settingInitialIndex)
+            if (dataProvider.CurrentIndex < 0 && settingInitialIndex)
                 throw NoResourceDataAfterDate(dataProvider.ResourceDescription, _currentDateTime);
         }
 

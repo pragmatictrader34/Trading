@@ -5,7 +5,10 @@ namespace NinjaTrader.Core.Custom.NtdReader
     public readonly struct PriceValues : IEquatable<PriceValues>
     {
         public readonly DateTime Timestamp;
-        public readonly double Open, High, Low, Close;
+        public readonly double Open;
+        public readonly double High;
+        public readonly double Low;
+        public readonly double Close;
         public readonly ulong Volume;
 
         public PriceValues(double open, double high, double low, double close, ulong volume, DateTime timestamp)

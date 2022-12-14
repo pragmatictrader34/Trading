@@ -9,7 +9,7 @@ namespace NinjaTrader.Core.Custom.NtdReader
     {
         public static bool IsEqualTo(this double value, double otherValue)
         {
-            return Math.Abs(value - otherValue) < 0.00000000000d;
+            return Math.Abs(value - otherValue) < 0.00000000001d;
         }
 
         public static double Increment(this double value, double singleIntervalSize, int addedIntervalCount)

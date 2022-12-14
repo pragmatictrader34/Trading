@@ -19,8 +19,6 @@ namespace NinjaTrader.Core.Custom
         {
         }
 
-        private int InitialIndex { get; set; }
-
         public List<PriceValues> PriceValuesCollection { get; private set; }
 
         public override ResourceDataProvider GetResourceDataProvider()
@@ -40,8 +38,11 @@ namespace NinjaTrader.Core.Custom
             return _resourceDataProvider;
         }
 
-        private IEnumerable<PriceValues> LoadPriceValues(DateTime from, DateTime to)
+        private List<PriceValues> LoadPriceValues(Range<DateTime> range)
         {
+            var from = RoundDateTime(range.Lower);
+            var to = RoundDateTime(range.Upper);
+
             if (PeriodType == BarsPeriodType.Minute)
                 to = to.AddDays(1).Date;
 
@@ -49,11 +50,21 @@ namespace NinjaTrader.Core.Custom
 
             var directory = Path.Combine(RootDirectory, subDirectory);
 
+            var collection = new List<PriceValues>();
+
             foreach (var filePath in GetFilePaths(from, to, directory))
             {
                 foreach (var priceValue in GetPriceValues(filePath))
-                    yield return priceValue;
+                {
+                    if (priceValue.Timestamp >= from && priceValue.Timestamp <= to)
+                        collection.Add(priceValue);
+                }
             }
+
+            if (collection.Any())
+                collection = AggregatePriceValues(collection);
+
+            return collection;
         }
 
         private IEnumerable<PriceValues> GetPriceValues(string filePath)
@@ -130,34 +141,76 @@ namespace NinjaTrader.Core.Custom
             return $@"{periodName}\{resourceName}";
         }
 
-        public override void MoveToDateTime(DateTime dateTime, DateTime from, DateTime to)
+        public override void MoveNext(DateTime currentTimestamp, Range<DateTime> range)
         {
             if (PriceValuesCollection == null)
-                PriceValuesCollection = LoadPriceValues(from, to).ToList();
+                PriceValuesCollection = LoadPriceValues(range);
 
-            dateTime = RoundDateTime(dateTime);
+            if (CurrentIndex < PriceValuesCollection.Count - 1)
+                CurrentIndex += 1;
+            else
+                CurrentIndex = -1;
+        }
 
-            var startIndex = CurrentIndex == -1 ? 0 : InitialIndex + CurrentIndex;
+        private List<PriceValues> AggregatePriceValues(List<PriceValues> collection)
+        {
+            var aggregatedCollection = new List<PriceValues>();
 
-            var index = PriceValuesCollection.FindIndex(startIndex, _ => _.Timestamp >= dateTime);
+            double open = double.MinValue;
+            double high = double.MinValue;
+            double low = double.MaxValue;
+            double close = 0;
+            ulong volume = 0;
 
-            if (index >= 0)
+            var startingNewAggregateIteration = false;
+            var previousTimestamp = RoundDateTime(collection[0].Timestamp);
+            var timestamp = GetNextTimestamp(previousTimestamp);
+
+            for (var i = 0; i < collection.Count; i++)
             {
-                var nextIndex = PriceValuesCollection.FindIndex(index + 1, _ => _.Timestamp <= to);
+                if (collection[i].Timestamp > timestamp)
+                    startingNewAggregateIteration = true;
 
-                if (nextIndex == -1)
-                    index = -1;
+                if (startingNewAggregateIteration)
+                {
+                    var values = new PriceValues(open, high, low, close, volume, timestamp);
+                    aggregatedCollection.Add(values);
+
+                    open = double.MinValue;
+                    high = double.MinValue;
+                    low = double.MaxValue;
+                    volume = 0;
+
+                    previousTimestamp = RoundDateTime(collection[i].Timestamp.AddTicks(-1));
+                    timestamp = GetNextTimestamp(previousTimestamp);
+
+                    startingNewAggregateIteration = false;
+                }
+
+                if (collection[i].Timestamp <= previousTimestamp)
+                    continue;
+
+                if (open.IsEqualTo(double.MinValue))
+                    open = collection[i].Open;
+
+                if (high < collection[i].High)
+                    high = collection[i].High;
+
+                if (low > collection[i].Low)
+                    low = collection[i].Low;
+
+                close = collection[i].Close;
+                volume += collection[i].Volume;
             }
 
-            if (CurrentIndex == -1)
-                InitialIndex = index;
+            return aggregatedCollection;
+        }
 
-            CurrentIndex = index == -1 ? -1 : index - InitialIndex;
-
-            if (index >= 0)
-                dateTime = PriceValuesCollection[index].Timestamp;
-
-            CurrentTimestamp = dateTime;
+        private DateTime GetNextTimestamp(DateTime timestamp)
+        {
+            var increment = GetTimeSpan(timestamp);
+            var nextTimestamp = timestamp.Add(increment);
+            return nextTimestamp;
         }
 
         private DateTime RoundDateTime(DateTime dateTime)
@@ -172,14 +225,14 @@ namespace NinjaTrader.Core.Custom
                 return dateTime.Date;
 
             if (PeriodType == BarsPeriodType.Minute)
-                return RoundDateTimeToMinutes(dateTime, Period);
+                return RoundDateTimeToMinutes(dateTime);
 
             throw new NotSupportedException($"Could not round the datetime value for period type {PeriodType}");
         }
 
-        public static DateTime RoundDateTimeToMinutes(DateTime dateTime, int period)
+        public DateTime RoundDateTimeToMinutes(DateTime dateTime)
         {
-            var timeSpan = period <= 1 ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(period);
+            var timeSpan = GetTimeSpan(dateTime);
             var ticks = dateTime.Ticks / timeSpan.Ticks * timeSpan.Ticks;
             return new DateTime(ticks, dateTime.Kind);
         }
@@ -205,7 +258,7 @@ namespace NinjaTrader.Core.Custom
                     {
                         throw new InvalidOperationException(
                             "Price values not loaded, probably because " +
-                            $"{nameof(LocalFileCacheDataProvider)}.{nameof(MoveToDateTime)} was not called");
+                            $"{nameof(LocalFileCacheDataProvider)}.{nameof(MoveNext)} was not called");
                     }
 
                     return collection;
@@ -264,7 +317,7 @@ namespace NinjaTrader.Core.Custom
             {
                 if (barsAgo)
                 {
-                    var properIndex = _parent.InitialIndex + _parent.CurrentIndex - index;
+                    var properIndex = _parent.CurrentIndex - index;
                     return properIndex;
                 }
                 else

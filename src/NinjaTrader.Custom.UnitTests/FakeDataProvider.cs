@@ -50,9 +50,9 @@ namespace NinjaTrader.Custom.UnitTests
                 OpenSeries, HighSeries, LowSeries, CloseSeries, VolumeSeries, TimestampSeries);
         }
 
-        public override void MoveToDateTime(DateTime dateTime, DateTime from, DateTime to)
+        public override void MoveNext(DateTime currentTimestamp, Range<DateTime> range)
         {
-            var i = TimestampSeries.Values.FindIndex(_ => _ >= dateTime);
+            var i = TimestampSeries.Values.FindIndex(_ => _ >= currentTimestamp);
 
             if (CurrentIndex == -1)
                 InitialIndex = i;

@@ -28,20 +28,41 @@ namespace NinjaTrader.Core.Custom
 
         public abstract ResourceDataProvider GetResourceDataProvider();
 
-        public abstract void MoveToDateTime(DateTime dateTime, DateTime from, DateTime to);
+        public abstract void MoveNext(DateTime currentTimestamp, Range<DateTime> range);
 
-        public TimeSpan GetTimeSpan()
+        public TimeSpan GetTimeSpan(DateTime dateTime)
         {
-            if (PeriodType == BarsPeriodType.Minute)
-                return TimeSpan.FromMinutes(1 * Period);
-
-            if (PeriodType == BarsPeriodType.Day)
-                return TimeSpan.FromDays(1 * Period);
-
-            if (PeriodType == BarsPeriodType.Week)
-                return TimeSpan.FromDays(7 * Period);
-
-            throw new NotSupportedException($"Could not determine timespan for period type {PeriodType}");
+            switch (PeriodType)
+            {
+                case BarsPeriodType.Minute:
+                {
+                    return TimeSpan.FromMinutes(1 * Period);
+                }
+                case BarsPeriodType.Day:
+                {
+                    return TimeSpan.FromDays(1 * Period);
+                }
+                case BarsPeriodType.Week:
+                {
+                    return TimeSpan.FromDays(7 * Period);
+                }
+                case BarsPeriodType.Month:
+                {
+                    var current = new DateTime(dateTime.Year, dateTime.Month, 1);
+                    var next = current.AddMonths(Period);
+                    return next - current;
+                }
+                case BarsPeriodType.Year:
+                {
+                    var current = new DateTime(dateTime.Year, 1, 1);
+                    var next = current.AddYears(Period);
+                    return next - current;
+                }
+                default:
+                {
+                    throw new NotSupportedException($"Could not determine timespan for period type {PeriodType}");
+                }
+            }
         }
     }
 }

@@ -50,18 +50,5 @@ namespace NinjaTrader.Core.FloatingPoint
 
             return -1;
         }
-
-        public static long GreatestCommonDivisor(long a, long b)
-        {
-            while (a != 0 && b != 0)
-            {
-                if (a > b)
-                    a %= b;
-                else
-                    b %= a;
-            }
-
-            return a | b;
-        }
     }
 }
