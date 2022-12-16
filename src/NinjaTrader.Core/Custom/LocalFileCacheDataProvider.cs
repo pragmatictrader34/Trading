@@ -43,9 +43,6 @@ namespace NinjaTrader.Core.Custom
             var from = RoundDateTime(range.Lower);
             var to = RoundDateTime(range.Upper);
 
-            if (PeriodType == BarsPeriodType.Minute)
-                to = to.AddDays(1).Date;
-
             var subDirectory = GetDirectory();
 
             var directory = Path.Combine(RootDirectory, subDirectory);

@@ -103,11 +103,16 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="FakeDataProvider.cs" />
-    <Compile Include="RecordedValues.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ScriptRunnerTestStrategy.cs" />
     <Compile Include="ScriptRunnerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptRunnerFactory.cs" />
+    <Compile Include="TestDataParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -129,6 +134,21 @@
       <Project>{FB0A6AA7-1E4F-457D-9939-D3818E3BF47A}</Project>
       <Name>NinjaTrader.Gui</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\eurusd_minute001_from_28_09_2022_till_29_09_2022.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\eurusd_day001_from_07_03_2020_till_18_04_2021.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\eurusd_minute003_from_28_09_2022_till_29_09_2022.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
