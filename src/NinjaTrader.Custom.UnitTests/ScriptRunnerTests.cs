@@ -144,7 +144,7 @@ namespace NinjaTrader.Custom.UnitTests
 
             var script = scriptRunner.Script;
 
-            var priceValues = GetExpectedPriceValues(testDataParameters);
+            var expected = GetExpectedPriceValues(testDataParameters);
 
             script.RecordedTimes.Count.Should().Be(script.RecordedOpens.Count);
             script.RecordedTimes.Count.Should().Be(script.RecordedHighs.Count);
@@ -152,19 +152,19 @@ namespace NinjaTrader.Custom.UnitTests
             script.RecordedTimes.Count.Should().Be(script.RecordedCloses.Count);
             script.RecordedTimes.Count.Should().Be(script.RecordedVolumes.Count);
 
-            var upperIndexBoundary = Math.Min(script.RecordedTimes.Count, priceValues.Count);
+            var upperIndexBoundary = Math.Min(script.RecordedTimes.Count, expected.Count);
 
             for (int index = 0; index < upperIndexBoundary; index++)
             {
-                script.RecordedTimes[index].Should().Be(priceValues[index].Timestamp);
-                script.RecordedOpens[index].Should().BeApproximately(priceValues[index].Open, precision);
-                script.RecordedHighs[index].Should().BeApproximately(priceValues[index].High, precision);
-                script.RecordedLows[index].Should().BeApproximately(priceValues[index].Low, precision);
-                script.RecordedCloses[index].Should().BeApproximately(priceValues[index].Close, precision);
-                script.RecordedVolumes[index].Should().BeApproximately(priceValues[index].Volume, precision);
+                script.RecordedTimes[index].Should().Be(expected[index].Timestamp);
+                script.RecordedOpens[index].Should().BeApproximately(expected[index].Open, precision);
+                script.RecordedHighs[index].Should().BeApproximately(expected[index].High, precision);
+                script.RecordedLows[index].Should().BeApproximately(expected[index].Low, precision);
+                script.RecordedCloses[index].Should().BeApproximately(expected[index].Close, precision);
+                script.RecordedVolumes[index].Should().BeApproximately(expected[index].Volume, precision);
             }
 
-            script.RecordedTimes.Count.Should().Be(priceValues.Count);
+            script.RecordedTimes.Count.Should().Be(expected.Count);
         }
 
         private static List<PriceValues> GetExpectedPriceValues(TestDataParameters testDataParameters)
