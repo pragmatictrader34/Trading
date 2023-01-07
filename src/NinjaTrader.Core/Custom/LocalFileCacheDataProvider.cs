@@ -10,14 +10,14 @@ namespace NinjaTrader.Core.Custom
 {
     public class LocalFileCacheDataProvider : DataProvider
     {
-        private const string RootDirectory = @"C:\Users\Boris\Documents\NinjaTrader 8\db";
-
         private ResourceDataProvider _resourceDataProvider;
 
         public LocalFileCacheDataProvider(SymbolType symbolType, BarsPeriodType periodType, int period)
             : base(symbolType, periodType, period)
         {
         }
+
+        public string RootDirectory { get; set; } = @"C:\Users\Boris\Documents\NinjaTrader 8\db";
 
         public List<PriceValues> PriceValuesCollection { get; private set; }
 

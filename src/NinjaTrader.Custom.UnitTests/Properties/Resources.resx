@@ -117,14 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="eurusd_day001_from_07_03_2020_till_18_04_2021" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\eurusd_day001_from_07_03_2020_till_18_04_2021.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="eurusd_minute001_from_28_09_2022_till_29_09_2022" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\eurusd_minute001_from_28_09_2022_till_29_09_2022.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="eurusd_minute003_from_28_09_2022_till_29_09_2022" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\eurusd_minute003_from_28_09_2022_till_29_09_2022.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
 </root>

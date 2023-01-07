@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using FluentAssertions;
 using NinjaTrader.Core.Custom;
 using NinjaTrader.Core.Custom.NtdReader;
@@ -16,6 +15,8 @@ namespace NinjaTrader.Custom.UnitTests
 {
     public class ScriptRunnerTests
     {
+        private static string RootDirectory => Path.Combine(Environment.CurrentDirectory, "..", "..", "data");
+
         [Fact]
         public void Run_StartUndefined_FailsWithExpectedException()
         {
@@ -97,7 +98,10 @@ namespace NinjaTrader.Custom.UnitTests
         {
             // Arrange
             var dataProvider = new LocalFileCacheDataProvider(
-                parameters.Symbol, parameters.PeriodType, parameters.Period);
+                parameters.Symbol, parameters.PeriodType, parameters.Period)
+            {
+                RootDirectory = RootDirectory
+            };
 
             var scriptRunner = ScriptRunnerFactory.Create<ScriptRunnerTestStrategy>(
                 parameters.Start, parameters.End, dataProvider);
@@ -165,28 +169,10 @@ namespace NinjaTrader.Custom.UnitTests
 
         private static List<PriceValues> GetExpectedPriceValues(TestDataParameters testDataParameters)
         {
-            var contents = GetEmbeddedFileContents(testDataParameters.ExpectedValuesResourceFileName);
-            var lines = contents.Split(new[] {(Environment.NewLine)}, StringSplitOptions.RemoveEmptyEntries);
+            var filePath = Path.Combine(RootDirectory, testDataParameters.ExpectedValuesResourceFileName);
+            var lines = File.ReadAllLines(filePath);
             var collection = lines.Select(PriceValues.FromString).ToList();
             return collection;
-        }
-
-        private static string GetEmbeddedFileContents(string fileName)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = $"NinjaTrader.Custom.UnitTests.Resources.{fileName}";
-
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream == null)
-                    throw new InvalidOperationException($"Resource {fileName} does not exist");
-
-                using (var reader = new StreamReader(stream))
-                {
-                    var contents = reader.ReadToEnd();
-                    return contents;
-                }
-            }
         }
 
         private FakeDataProvider CreateDataProvider()
