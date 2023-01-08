@@ -197,8 +197,20 @@ namespace NinjaTrader.Core.Custom
                 var timestamp = collection[index].Timestamp;
 
                 index += 1;
+                var aggregateCount = 1;
 
-                while (index < collection.Count && collection[index].Timestamp < nextTimestamp)
+                bool ContinueAggregating()
+                {
+                    if (index >= collection.Count)
+                        return false;
+
+                    if (PeriodType != BarsPeriodType.Day)
+                        return collection[index].Timestamp < nextTimestamp;
+
+                    return aggregateCount < Period;
+                }
+
+                while (ContinueAggregating())
                 {
                     if (high < collection[index].High)
                         high = collection[index].High;
@@ -212,6 +224,7 @@ namespace NinjaTrader.Core.Custom
                     timestamp = collection[index].Timestamp;
 
                     index += 1;
+                    aggregateCount += 1;
                 }
 
                 var values = new PriceValues(open, high, low, close, volume, timestamp);
