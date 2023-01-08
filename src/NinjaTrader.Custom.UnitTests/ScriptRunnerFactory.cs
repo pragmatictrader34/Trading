@@ -16,11 +16,30 @@ namespace NinjaTrader.Custom.UnitTests
 
             var containsMinutePeriodTypes = dataProviders.Any(_ => _.PeriodType == BarsPeriodType.Minute);
 
+            DateTime GetStartTimestamp(DateTime dateTime)
+            {
+                if (!containsMinutePeriodTypes)
+                    return dateTime;
+
+                var startTimestamp = dateTime.AddDays(-1).GetMarketStartTimestamp().AddMinutes(1);
+                return startTimestamp;
+            }
+
+            DateTime GetEndTimestamp(DateTime dateTime)
+            {
+                if (!containsMinutePeriodTypes)
+                    return dateTime;
+
+                var startTimestamp = dateTime.GetMarketStartTimestamp().AddMinutes(-1);
+
+                return startTimestamp;
+            }
+
             if (start != null)
-                runner.Start = containsMinutePeriodTypes ? start.Value.ToNinjaTraderTime() : start.Value.Date;
+                runner.Start = GetStartTimestamp(start.Value.Date);
 
             if (end != null)
-                runner.End = containsMinutePeriodTypes ? end.Value.ToNinjaTraderTime().AddDays(1) : end.Value.Date;
+                runner.End = GetEndTimestamp(end.Value.Date);
 
             return runner;
         }

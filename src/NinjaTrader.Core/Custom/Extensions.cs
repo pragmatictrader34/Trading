@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
+// ReSharper disable InconsistentNaming
 
 namespace NinjaTrader.Core.Custom
 {
     public static class Extensions
     {
-        private static Dictionary<int, Range<DateTime>[]> _twoHourOffsetDateRanges
+        private static readonly Dictionary<int, Range<DateTime>[]> _twoHourOffsetDateRanges
             = new Dictionary<int, Range<DateTime>[]>();
 
         public static string GetName(this SymbolType symbol)
@@ -41,13 +44,13 @@ namespace NinjaTrader.Core.Custom
 
             if (dateTime.Month == 3)
             {
-                startDayOffset = dateTime.Day <= 28 ? -13 : -20;
-                endDayOffset = -2;
+                startDayOffset = dateTime.Day <= 28 ? -14 : -21;
+                endDayOffset = 0;
             }
             else
             {
-                startDayOffset = 1;
-                endDayOffset = 5;
+                startDayOffset = 0;
+                endDayOffset = 7;
             }
 
             var start = dateTime.AddDays(startDayOffset);
@@ -71,6 +74,18 @@ namespace NinjaTrader.Core.Custom
             } while (dateTime.DayOfWeek != DayOfWeek.Sunday);
 
             return dateTime;
+        }
+
+        public static DateTime GetMarketStartTimestamp(this DateTime dateTime)
+        {
+            var date = dateTime.Date;
+            var ranges = GetTwoHourOffsetDateRanges(date.Year);
+
+            var isTwoHourOffsetDate = ranges.Any(_ => _.Contains(date));
+
+            var result = isTwoHourOffsetDate ? date.AddHours(22) : date.AddHours(23);
+
+            return result;
         }
     }
 }

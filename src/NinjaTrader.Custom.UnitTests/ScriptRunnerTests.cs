@@ -154,7 +154,7 @@ namespace NinjaTrader.Custom.UnitTests
                 new object[] {SymbolType.EurUsd, BarsPeriodType.Day,      1, "28.03.2022", "31.05.2022"},
                 new object[] {SymbolType.EurUsd, BarsPeriodType.Day,      2, "28.03.2022", "31.05.2022"},
                 new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "11.03.2022", "15.03.2022"},
-                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "12.03.2022", "15.03.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "12.03.2022", "14.03.2022"},
                 new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "13.03.2022", "15.03.2022"},
                 new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "14.03.2022", "15.03.2022"},
                 new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "15.03.2022", "16.03.2022"},
