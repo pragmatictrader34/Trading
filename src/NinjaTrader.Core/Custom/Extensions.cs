@@ -45,12 +45,12 @@ namespace NinjaTrader.Core.Custom
             if (dateTime.Month == 3)
             {
                 startDayOffset = dateTime.Day <= 28 ? -14 : -21;
-                endDayOffset = 0;
+                endDayOffset = -1;
             }
             else
             {
                 startDayOffset = 0;
-                endDayOffset = 7;
+                endDayOffset = 6;
             }
 
             var start = dateTime.AddDays(startDayOffset);

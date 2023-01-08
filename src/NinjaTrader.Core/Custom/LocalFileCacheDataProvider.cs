@@ -176,15 +176,18 @@ namespace NinjaTrader.Core.Custom
 
         private List<PriceValues> AggregatePriceValues(List<PriceValues> collection)
         {
-            var aggregatedCollection = new List<PriceValues>();
-
             var index = 0;
+            var nextTimestamp = collection.First().Timestamp;
+            var aggregatedCollection = new List<PriceValues>();
 
             while (index < collection.Count)
             {
-                var roundedTimestamp = RoundDateTime(collection[index].Timestamp);
                 var timeSpan = GetTimeSpan(collection[index].Timestamp);
-                var nextTimestamp = roundedTimestamp.Add(timeSpan);
+
+                do
+                {
+                    nextTimestamp = nextTimestamp.Add(timeSpan);
+                } while (nextTimestamp <= collection[index].Timestamp);
 
                 var open = collection[index].Open;
                 var high = collection[index].High;
@@ -217,35 +220,6 @@ namespace NinjaTrader.Core.Custom
             }
 
             return aggregatedCollection;
-        }
-
-        private DateTime RoundDateTime(DateTime dateTime)
-        {
-            if (PeriodType == BarsPeriodType.Year)
-                return new DateTime(dateTime.Year, 1, 1);
-
-            if (PeriodType == BarsPeriodType.Month)
-                return new DateTime(dateTime.Year, dateTime.Month, 1);
-
-            if (PeriodType == BarsPeriodType.Day)
-                return dateTime.Date;
-
-            if (PeriodType == BarsPeriodType.Minute)
-                return RoundDateTimeToMinutes(dateTime);
-
-            throw new NotSupportedException($"Could not round the datetime value for period type {PeriodType}");
-        }
-
-        public DateTime RoundDateTimeToMinutes(DateTime dateTime)
-        {
-            var timeSpan = GetTimeSpan(dateTime);
-            var ticks = dateTime.Ticks / timeSpan.Ticks * timeSpan.Ticks;
-            var roundedDateTime = new DateTime(ticks, dateTime.Kind);
-
-            if (Period > 1)
-                roundedDateTime = roundedDateTime.AddMinutes(1);
-
-            return roundedDateTime;
         }
 
         private class SeriesProvider : ISeries<double>, ISeries<DateTime>
