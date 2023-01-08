@@ -113,30 +113,6 @@ namespace NinjaTrader.Custom.UnitTests
             Assert_RecordedValuesAreCorrect(scriptRunner, parameters);
         }
 
-        public static IEnumerable<object[]> GetTestDataParameters()
-        {
-            var parameters = new[]
-            {
-                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute, 1, "28.09.2022", "29.09.2022"},
-                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute, 3, "28.09.2022", "29.09.2022"},
-                new object[] {SymbolType.EurUsd, BarsPeriodType.Day,    1, "07.03.2020", "18.04.2021"},
-            };
-
-            var result = parameters.Select(x => new object[]
-            {
-                new TestDataParameters
-                {
-                    Symbol = (SymbolType) x[0],
-                    PeriodType = (BarsPeriodType) x[1],
-                    Period = (int) x[2],
-                    Start = DateTime.ParseExact((string) x[3], "dd.MM.yyyy", CultureInfo.InvariantCulture),
-                    End = DateTime.ParseExact((string) x[4], "dd.MM.yyyy", CultureInfo.InvariantCulture)
-                }
-            });
-
-            return result;
-        }
-
         private static void Assert_RecordedValuesAreCorrect(ScriptRunner<ScriptRunnerTestStrategy> scriptRunner,
             TestDataParameters testDataParameters)
         {
@@ -165,6 +141,41 @@ namespace NinjaTrader.Custom.UnitTests
             }
 
             script.RecordedTimes.Count.Should().Be(expected.Count);
+        }
+
+        public static IEnumerable<object[]> GetTestDataParameters()
+        {
+            var parameters = new[]
+            {
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Day,      1, "13.03.2022", "31.05.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Day,      1, "14.03.2022", "31.05.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Day,      1, "15.03.2022", "31.05.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Day,      1, "26.03.2022", "31.05.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Day,      1, "28.03.2022", "31.05.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Day,      2, "28.03.2022", "31.05.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "11.03.2022", "15.03.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "12.03.2022", "15.03.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "13.03.2022", "15.03.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "14.03.2022", "15.03.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,   1, "15.03.2022", "16.03.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,  60, "11.03.2022", "27.03.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute,  60, "11.03.2022", "29.03.2022"},
+                new object[] {SymbolType.EurUsd, BarsPeriodType.Minute, 240, "11.03.2022", "15.03.2022"}
+            };
+
+            var result = parameters.Select(x => new object[]
+            {
+                new TestDataParameters
+                {
+                    Symbol = (SymbolType) x[0],
+                    PeriodType = (BarsPeriodType) x[1],
+                    Period = (int) x[2],
+                    Start = DateTime.ParseExact((string) x[3], "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                    End = DateTime.ParseExact((string) x[4], "dd.MM.yyyy", CultureInfo.InvariantCulture)
+                }
+            });
+
+            return result;
         }
 
         private static List<PriceValues> GetExpectedPriceValues(TestDataParameters testDataParameters)

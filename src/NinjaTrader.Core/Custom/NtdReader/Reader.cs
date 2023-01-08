@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 #pragma warning disable CS1591
 // ReSharper disable CommentTypo
@@ -330,6 +331,9 @@ namespace NinjaTrader.Core.Custom.NtdReader
                 var ticks = reader.ReadInt64();
                 var timestamp = new DateTime(ticks, DateTimeKind.Local);
 
+                var offsetInHours = GetTimeOffsetInHours(timestamp);
+                timestamp = timestamp.AddHours(offsetInHours);
+
                 var open = reader.ReadDouble();
                 var high = reader.ReadDouble();
                 var low = reader.ReadDouble();
@@ -340,6 +344,16 @@ namespace NinjaTrader.Core.Custom.NtdReader
             }
 
             return values;
+        }
+
+        private static double GetTimeOffsetInHours(DateTime date)
+        {
+            var ranges = Custom.Extensions.GetTwoHourOffsetDateRanges(date.Year);
+
+            if (ranges.Any(_ => _.Contains(date)))
+                return 22;
+
+            return 23;
         }
     }
 }

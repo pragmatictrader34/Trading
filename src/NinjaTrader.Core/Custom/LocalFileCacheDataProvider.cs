@@ -51,10 +51,14 @@ namespace NinjaTrader.Core.Custom
 
             foreach (var filePath in GetFilePaths(from, to, directory))
             {
-                foreach (var priceValue in GetPriceValues(filePath))
+                var priceValues = GetPriceValues(filePath).ToList();
+
+                RemoveInvalidPriceValues(priceValues);
+
+                foreach (var values in priceValues)
                 {
-                    if (priceValue.Timestamp >= from && priceValue.Timestamp <= to)
-                        collection.Add(priceValue);
+                    if (values.Timestamp >= from && values.Timestamp <= to)
+                        collection.Add(values);
                 }
             }
 
@@ -62,6 +66,12 @@ namespace NinjaTrader.Core.Custom
                 collection = AggregatePriceValues(collection);
 
             return collection;
+        }
+
+        private void RemoveInvalidPriceValues(List<PriceValues> priceValues)
+        {
+            if (PeriodType == BarsPeriodType.Minute && priceValues.Count < 2)
+                priceValues.Clear();
         }
 
         private IEnumerable<PriceValues> GetPriceValues(string filePath)
