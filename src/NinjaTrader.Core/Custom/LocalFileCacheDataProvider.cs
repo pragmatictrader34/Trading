@@ -187,6 +187,17 @@ namespace NinjaTrader.Core.Custom
                 do
                 {
                     nextTimestamp = nextTimestamp.Add(timeSpan);
+
+                    if (index == 0 || collection[index - 1].Timestamp.Date == collection[index].Timestamp.Date)
+                        continue;
+
+                    var marketStartTimestamp = collection[index].Timestamp.GetMarketStartTimestamp();
+
+                    if (collection[index].Timestamp >= marketStartTimestamp)
+                    {
+                        nextTimestamp = marketStartTimestamp.AddMinutes(1).Add(timeSpan);
+                        break;
+                    }
                 } while (nextTimestamp <= collection[index].Timestamp);
 
                 var open = collection[index].Open;
