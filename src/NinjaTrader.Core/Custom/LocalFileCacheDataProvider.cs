@@ -249,11 +249,15 @@ namespace NinjaTrader.Core.Custom
                     return collection[index - 1].Timestamp < nextTimestamp;
                 }
 
-                if (!IgnoreLastAggregatedPrices())
-                {
-                    var values = new PriceValues(open, high, low, close, volume, timestamp);
-                    aggregatedCollection.Add(values);
-                }
+                if (IgnoreLastAggregatedPrices())
+                    continue;
+
+                if (PeriodType == BarsPeriodType.Minute && Period > 1)
+                    timestamp = nextTimestamp.AddMinutes(-1);
+
+                var values = new PriceValues(open, high, low, close, volume, timestamp);
+
+                aggregatedCollection.Add(values);
             }
 
             return aggregatedCollection;
