@@ -238,9 +238,22 @@ namespace NinjaTrader.Core.Custom
                     aggregateCount += 1;
                 }
 
-                var values = new PriceValues(open, high, low, close, volume, timestamp);
+                bool IgnoreLastAggregatedPrices()
+                {
+                    if (index <= 0 || index < collection.Count)
+                        return false;
 
-                aggregatedCollection.Add(values);
+                    if (Period == 1 || PeriodType != BarsPeriodType.Minute)
+                        return false;
+
+                    return collection[index - 1].Timestamp < nextTimestamp;
+                }
+
+                if (!IgnoreLastAggregatedPrices())
+                {
+                    var values = new PriceValues(open, high, low, close, volume, timestamp);
+                    aggregatedCollection.Add(values);
+                }
             }
 
             return aggregatedCollection;
