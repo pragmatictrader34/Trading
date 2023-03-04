@@ -15,6 +15,8 @@ namespace NinjaTrader.Custom.UnitTests
 {
     public class ScriptRunnerTests
     {
+        private const double Precision = 0.000000000001;
+
         private static string RootDirectory => Path.Combine(Environment.CurrentDirectory, "..", "..", "data");
 
         [Fact]
@@ -113,11 +115,46 @@ namespace NinjaTrader.Custom.UnitTests
             Assert_RecordedValuesAreCorrect(scriptRunner, parameters);
         }
 
+        [Fact]
+        public void Run_ExecutedWithCachedData_CorrectlyCalculatesEma20IndexValues()
+        {
+            // Arrange
+            var parameters = new TestDataParameters
+            {
+                Symbol = SymbolType.EurUsd,
+                PeriodType = BarsPeriodType.Minute,
+                Period = 1,
+                Start = new DateTime(2022, 03, 11),
+                End = new DateTime(2022, 03, 15),
+            };
+
+            var dataProvider = new LocalFileCacheDataProvider(
+                parameters.Symbol, parameters.PeriodType, parameters.Period)
+            {
+                RootDirectory = RootDirectory
+            };
+
+            var scriptRunner = ScriptRunnerFactory.Create<ScriptRunnerTestStrategy>(
+                parameters.Start, parameters.End, dataProvider);
+
+            // Act
+            scriptRunner.Run();
+
+            // Assert
+            var script = scriptRunner.Script;
+            var fileName = $"ema020_{parameters.ExpectedValuesResourceFileName}";
+            var expectedIndexValues = GetExpectedIndexValues(fileName);
+
+            for (int index = 0; index < expectedIndexValues.Count; index++)
+            {
+                script.RecordedTimes[index].Should().Be(expectedIndexValues[index].Timestamp);
+                script.RecordedEma20Values[index].Should().Be(expectedIndexValues[index].Value);
+            }
+        }
+
         private static void Assert_RecordedValuesAreCorrect(ScriptRunner<ScriptRunnerTestStrategy> scriptRunner,
             TestDataParameters testDataParameters)
         {
-            const double precision = 0.000000000001;
-
             var script = scriptRunner.Script;
 
             var expected = GetExpectedPriceValues(testDataParameters);
@@ -133,11 +170,11 @@ namespace NinjaTrader.Custom.UnitTests
             for (int index = 0; index < upperIndexBoundary; index++)
             {
                 script.RecordedTimes[index].Should().Be(expected[index].Timestamp);
-                script.RecordedOpens[index].Should().BeApproximately(expected[index].Open, precision);
-                script.RecordedHighs[index].Should().BeApproximately(expected[index].High, precision);
-                script.RecordedLows[index].Should().BeApproximately(expected[index].Low, precision);
-                script.RecordedCloses[index].Should().BeApproximately(expected[index].Close, precision);
-                script.RecordedVolumes[index].Should().BeApproximately(expected[index].Volume, precision);
+                script.RecordedOpens[index].Should().BeApproximately(expected[index].Open, Precision);
+                script.RecordedHighs[index].Should().BeApproximately(expected[index].High, Precision);
+                script.RecordedLows[index].Should().BeApproximately(expected[index].Low, Precision);
+                script.RecordedCloses[index].Should().BeApproximately(expected[index].Close, Precision);
+                script.RecordedVolumes[index].Should().BeApproximately(expected[index].Volume, Precision);
             }
 
             script.RecordedTimes.Count.Should().Be(expected.Count);
@@ -185,6 +222,14 @@ namespace NinjaTrader.Custom.UnitTests
             var filePath = Path.Combine(RootDirectory, testDataParameters.ExpectedValuesResourceFileName);
             var lines = File.ReadAllLines(filePath);
             var collection = lines.Select(PriceValues.FromString).ToList();
+            return collection;
+        }
+
+        private static List<IndexValue> GetExpectedIndexValues(string fileName)
+        {
+            var filePath = Path.Combine(RootDirectory, fileName);
+            var lines = File.ReadAllLines(filePath);
+            var collection = lines.Select(IndexValue.FromString).ToList();
             return collection;
         }
 

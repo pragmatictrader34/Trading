@@ -67,6 +67,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Indicators\%40EMA.cs" />
     <Compile Include="MarketAnalyzerColumns\%40MarketAnalyzerColumn.cs" />
     <Compile Include="DrawingTools\%40ChartMarkers.cs" />
     <Compile Include="Indicators\%40MIN.cs" />

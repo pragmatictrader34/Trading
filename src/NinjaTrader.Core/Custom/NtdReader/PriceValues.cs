@@ -76,7 +76,7 @@ namespace NinjaTrader.Core.Custom.NtdReader
             return new PriceValues(open, high, low, close, volume, timestamp);
         }
 
-        private static T FromString<T>(string text)
+        public static T FromString<T>(string text)
         {
             if (typeof(T) == typeof(DateTime))
             {
