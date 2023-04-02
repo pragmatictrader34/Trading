@@ -83,46 +83,22 @@ namespace NinjaTrader.NinjaScript.Strategies
 		{
             if (ShouldPlaceLongPosition())
             {
-                DrawVerticalLine(MarketPosition.Long);
+                this.DrawVerticalMarkerLine(MarketPosition.Long);
                 //EnterLong(10);
             }
             else if (ShouldPlaceShortPosition())
             {
-                DrawVerticalLine(MarketPosition.Short);
+                this.DrawVerticalMarkerLine(MarketPosition.Short);
                 //EnterShort(10);
             }
             else if (IsTop38_2Candle() || IsBottom38_2Candle())
             {
-                //DrawVerticalLine();
+                this.DrawVerticalMarkerLine();
             }
 
             _isAbove20Ema = Low[0] > _ema.Value[0];
             _isBelow20Ema = High[0] < _ema.Value[0];
 		}
-
-        private void DrawVerticalLine(MarketPosition? positionType = null)
-        {
-            var BarToLineOffsetInTicks = 200;
-            var LineDashStyle = DashStyleHelper.Dot;
-            var LINE_LENGTH_TICKS = 100000;
-            var TAG_SUFFIX = "_VertLineAtTime";
-            var tag = Time[0] + TAG_SUFFIX + "AboveBar";
-            var startY = High[0] + BarToLineOffsetInTicks * TickSize;
-            var endY = High[0] + LINE_LENGTH_TICKS * TickSize;
-
-            var lineThickness = positionType == null ? 1 : 3;
-            var brush = positionType == null ? Brushes.Yellow : Brushes.Green;
-
-            if (positionType == MarketPosition.Long || positionType == null)
-                Draw.Line(this, tag, false, 0, startY, 0, endY, brush, LineDashStyle, lineThickness);
-
-            tag = Time[0] + TAG_SUFFIX + "BelowBar";
-            startY = 0;
-            endY = Low[0] - BarToLineOffsetInTicks * TickSize;
-
-            if (positionType == MarketPosition.Short || positionType == null)
-                Draw.Line(this, tag, false, 0, startY, 0, endY, brush, LineDashStyle, lineThickness);
-        }
 
         private bool ShouldPlaceLongPosition()
         {

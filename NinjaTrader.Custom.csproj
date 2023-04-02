@@ -381,6 +381,8 @@
     <Compile Include="Strategies\DojiCandleWickTouchesEma.cs" />
     <Compile Include="Strategies\ATRBreakout.cs" />
     <Compile Include="Indicators\SwingLevels.cs" />
+    <Compile Include="Strategies\TcCrossing20Ema.cs" />
+    <Compile Include="Indicators\Extensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">

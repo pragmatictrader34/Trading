@@ -1,25 +1,10 @@
 #region Using declarations
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml.Serialization;
-using NinjaTrader.Cbi;
-using NinjaTrader.Gui;
 using NinjaTrader.Gui.Chart;
-using NinjaTrader.Gui.SuperDom;
-using NinjaTrader.Gui.Tools;
-using NinjaTrader.Data;
-using NinjaTrader.NinjaScript;
-using NinjaTrader.Core.FloatingPoint;
-using NinjaTrader.CQG.ProtoBuf;
-using NinjaTrader.NinjaScript.DrawingTools;
+
 #endregion
 
 // ReSharper disable CommentTypo
@@ -29,35 +14,69 @@ namespace NinjaTrader.NinjaScript.Indicators
 {
 	public class SwingLevels : Indicator
     {
-        private int startIndex;
-        private bool closedBelowLastMajorSwingLow;
-        private bool closedAboveLastMajorSwingHigh;
+        private int _startIndex;
+        private bool _closedBelowLastMajorSwingLow;
+        private bool _closedAboveLastMajorSwingHigh;
+        private Series<double> _minorSwingHighs;
+        private Series<double> _majorSwingHighs;
+        private Series<double> _minorSwingLows;
+        private Series<double> _majorSwingLows;
 
-        private List<SwingLevelData> Levels { get; set; }
-
-        private SwingLevelData LastSwingLow
+        private SwingLevelData GetMostRecentSwingLevel(params SwingLevelType[] types)
         {
-            get { return Levels.LastOrDefault(_ => _.IsSwingLow()); }
+            var swingLevel = types == null || !types.Any()
+                ? GetSwingLevels().FirstOrDefault()
+                : GetSwingLevels().FirstOrDefault(_ => types.Contains(_.Type));
+
+            return swingLevel;
         }
 
-        private SwingLevelData LastSwingHigh
+        private SwingLevelData GetMostRecentSwingLevel(Predicate<SwingLevelData> predicate)
         {
-            get { return Levels.LastOrDefault(_ => _.IsSwingHigh()); }
+            return GetSwingLevels().FirstOrDefault(_ => predicate(_));
         }
 
-        private SwingLevelData LastMajorSwingLow
+        private IEnumerable<SwingLevelData> GetSwingLevels()
         {
-            get { return Levels.LastOrDefault(_ => _.Type == SwingType.MajorSwingLow); }
+            for (int i = CurrentBar; i >= 0; i--)
+            {
+                if (_majorSwingHighs.IsValidDataPointAt(i))
+                    yield return new SwingLevelData(
+                        SwingLevelType.MajorSwingHigh, _majorSwingHighs[i], Time.GetValueAt(i), i);
+
+                if (_minorSwingHighs.IsValidDataPointAt(i))
+                    yield return new SwingLevelData(
+                        SwingLevelType.MinorSwingHigh, _minorSwingHighs[i], Time.GetValueAt(i), i);
+
+                if (_majorSwingLows.IsValidDataPointAt(i))
+                    yield return new SwingLevelData(
+                        SwingLevelType.MajorSwingLow, _majorSwingLows[i], Time.GetValueAt(i), i);
+
+                if (_minorSwingLows.IsValidDataPointAt(i))
+                    yield return new SwingLevelData(
+                        SwingLevelType.MinorSwingLow, _minorSwingLows[i], Time.GetValueAt(i), i);
+            }
         }
 
-        private SwingLevelData LastMajorSwingHigh
+        private void RemoveSwingLevel(SwingLevelData swingLevel)
         {
-            get { return Levels.LastOrDefault(_ => _.Type == SwingType.MajorSwingHigh); }
-        }
+            var index = CurrentBar - swingLevel.BarIndex;
 
-        private SwingLevelData LastSwingLevel
-        {
-            get { return Levels.LastOrDefault(); }
+            switch (swingLevel.Type)
+            {
+                case SwingLevelType.MinorSwingHigh:
+                    _minorSwingHighs.Reset(index);
+                    break;
+                case SwingLevelType.MajorSwingHigh:
+                    _majorSwingHighs.Reset(index);
+                    break;
+                case SwingLevelType.MinorSwingLow:
+                    _minorSwingLows.Reset(index);
+                    break;
+                case SwingLevelType.MajorSwingLow:
+                    _majorSwingLows.Reset(index);
+                    break;
+            }
         }
 
         protected override void OnStateChange()
@@ -73,7 +92,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				DrawHorizontalGridLines						= false;
 				DrawVerticalGridLines						= false;
 				PaintPriceMarkers							= false;
-				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
+				ScaleJustification							= ScaleJustification.Right;
 				//Disable this property if your indicator requires custom values that cumulate with each new market data event. 
 				//See Help Guide for additional information.
 				IsSuspendedWhileInactive					= true;
@@ -82,50 +101,27 @@ namespace NinjaTrader.NinjaScript.Indicators
 			}
 			else if (State == State.Configure)
             {
-                startIndex = Int32.MinValue;
+                _startIndex = int.MinValue;
             }
 			else if (State == State.DataLoaded)
             {
-                Levels = new List<SwingLevelData>();
+				_minorSwingHighs = new Series<double>(this, MaximumBarsLookBack.Infinite);
+				_majorSwingHighs = new Series<double>(this, MaximumBarsLookBack.Infinite);
+				_minorSwingLows = new Series<double>(this, MaximumBarsLookBack.Infinite);
+				_majorSwingLows = new Series<double>(this, MaximumBarsLookBack.Infinite);
             }
 		}
 
-        //protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
-        //{
-        //    SharpDX.Direct2D1.PathGeometry g = null;
-        //    SharpDX.Direct2D1.GeometrySink sink = null;
-
-        //    g = new SharpDX.Direct2D1.PathGeometry(Core.Globals.D2DFactory);
-
-        //    sink = g.Open();
-
-        //    sink.BeginFigure(new SharpDX.Vector2(5, 5), SharpDX.Direct2D1.FigureBegin.Hollow);
-        //    sink.AddLine(new SharpDX.Vector2(50, 50));
-        //    sink.AddLine(new SharpDX.Vector2(100, 50));
-        //    sink.AddLine(new SharpDX.Vector2(100, 70));
-        //    sink.AddLine(new SharpDX.Vector2(120, 70));
-
-        //    sink.EndFigure(SharpDX.Direct2D1.FigureEnd.Open);
-        //    sink.Close();
-
-        //    var oldAntiAliasMode = RenderTarget.AntialiasMode;
-        //    RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.PerPrimitive;
-        //    RenderTarget.DrawGeometry(g, Plots[0].BrushDX, Plots[0].Width, Plots[0].StrokeStyle);
-        //    RenderTarget.AntialiasMode = oldAntiAliasMode;
-        //    g.Dispose();
-        //    RemoveDrawObject("NinjaScriptInfo");
-        //}
-
         protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
         {
-            if (Bars == null || chartControl == null || Levels == null || Levels.Count < 2)
+            if (Bars == null || chartControl == null || _startIndex == int.MinValue)
                 return;
 
             int preDiff = 1;
 
             for (int i = ChartBars.FromIndex - 1; i >= 0; i--)
             {
-                if (i < startIndex || i > Bars.Count - 2 || IsSwingLevelAtIndex(i))
+                if (i < _startIndex || i > Bars.Count - 2 || IsSwingLevelAtIndex(i))
                     break;
 
                 preDiff++;
@@ -134,7 +130,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             int postDiff = 0;
             for (int i = ChartBars.ToIndex; i < Count; i++)
             {
-                if (i < startIndex || i > Bars.Count - 2 || IsSwingLevelAtIndex(i))
+                if (i < _startIndex || i > Bars.Count - 2 || IsSwingLevelAtIndex(i))
                     break;
 
                 postDiff++;
@@ -147,17 +143,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             for (int idx = ChartBars.FromIndex - preDiff; idx <= ChartBars.ToIndex + postDiff; idx++)
             {
-                if (idx < startIndex || idx > Bars.Count - 2)
+                if (idx < _startIndex || idx > Bars.Count - 2)
                     continue;
 
-                var swingLevel = Levels.FirstOrDefault(_ => _.BarIndex == idx);
+                double value;
 
-                if (swingLevel == null)
+                if (_majorSwingHighs.IsValidDataPointAt(idx))
+                    value = _majorSwingHighs[idx];
+                else if (_majorSwingLows.IsValidDataPointAt(idx))
+                    value = _majorSwingLows[idx];
+                else
                     continue;
 
-                double value = swingLevel.Value;
-
-                if (lastIdx >= startIndex)
+                if (lastIdx >= _startIndex)
                 {
                     float x1 = (chartControl.BarSpacingType == BarSpacingType.TimeBased || chartControl.BarSpacingType == BarSpacingType.EquidistantMulti && idx + Displacement >= ChartBars.Count
                         ? chartControl.GetXByTime(ChartBars.GetTimeByBarIdx(chartControl, idx + Displacement))
@@ -201,8 +199,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private bool IsSwingLevelAtIndex(int index)
         {
-            var isSwingLevel = Levels.Any(_ => _.BarIndex == index);
-            return isSwingLevel;
+            if (_majorSwingHighs.IsValidDataPointAt(index))
+                return true;
+
+            if (_minorSwingHighs.IsValidDataPointAt(index))
+                return true;
+
+            if (_majorSwingLows.IsValidDataPointAt(index))
+                return true;
+
+            if (_minorSwingLows.IsValidDataPointAt(index))
+                return true;
+
+            return false;
         }
 
         protected override void OnBarUpdate()
@@ -210,11 +219,15 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (CurrentBar < 4)
                 return;
 
-            if (LastMajorSwingLow != null && !closedBelowLastMajorSwingLow)
-                closedBelowLastMajorSwingLow = Close[2] < LastMajorSwingLow.Value;
+            var lastMajorSwingLow = GetMostRecentSwingLevel(SwingLevelType.MajorSwingLow);
 
-            if (LastMajorSwingHigh != null && !closedAboveLastMajorSwingHigh)
-                closedAboveLastMajorSwingHigh = Close[2] > LastMajorSwingHigh.Value;
+            if (!_closedBelowLastMajorSwingLow && lastMajorSwingLow != null)
+                _closedBelowLastMajorSwingLow = Close[2] < lastMajorSwingLow.Value;
+
+            var lastMajorSwingHigh = GetMostRecentSwingLevel(SwingLevelType.MajorSwingHigh);
+
+            if (!_closedAboveLastMajorSwingHigh && lastMajorSwingHigh != null)
+                _closedAboveLastMajorSwingHigh = Close[2] > lastMajorSwingHigh.Value;
 
             if (IsSwingLowCandidate)
                 ExamineSwingLow();
@@ -225,33 +238,37 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private void ExamineSwingLow()
         {
-            var swingType = SwingType.None;
+            var swingType = SwingLevelType.None;
 
-            if (LastSwingLevel != null && LastSwingLevel.IsSwingLow())
+            var lastSwingLevel = GetMostRecentSwingLevel();
+
+            if (lastSwingLevel != null && lastSwingLevel.IsSwingLow())
             {
-                if (LastSwingLevel.Value < Low[2])
+                if (lastSwingLevel.Value < Low[2])
                     return;
 
-                swingType = LastSwingLevel.Type;
-                Levels.RemoveAt(Levels.Count - 1);
+                swingType = lastSwingLevel.Type;
+                RemoveSwingLevel(lastSwingLevel);
             }
 
-            if (swingType == SwingType.None)
+            if (swingType == SwingLevelType.None)
             {
-                swingType = Levels.Any(_ => _.IsSwingLow())
-                    ? SwingType.MinorSwingLow
-                    : SwingType.MajorSwingLow;
+                swingType = GetSwingLevels().Any(_ => _.IsSwingLow())
+                    ? SwingLevelType.MinorSwingLow
+                    : SwingLevelType.MajorSwingLow;
             }
 
-            if (closedBelowLastMajorSwingLow)
+            if (_closedBelowLastMajorSwingLow)
             {
-                swingType = SwingType.MajorSwingLow;
+                swingType = SwingLevelType.MajorSwingLow;
 
-                closedBelowLastMajorSwingLow = false;
-                closedAboveLastMajorSwingHigh = false;
+                _closedBelowLastMajorSwingLow = false;
+                _closedAboveLastMajorSwingHigh = false;
 
-                if (LastSwingHigh != null)
-                    LastSwingHigh.Type = SwingType.MajorSwingHigh;
+                var lastSwingHigh = GetMostRecentSwingLevel(_ => _.IsSwingHigh());
+
+                if (lastSwingHigh != null)
+                    lastSwingHigh.Type = SwingLevelType.MajorSwingHigh;
             }
 
             AddSwingLevel(swingType);
@@ -259,50 +276,66 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private void ExamineSwingHigh()
         {
-            var swingType = SwingType.None;
+            var swingType = SwingLevelType.None;
 
-            if (LastSwingLevel != null && LastSwingLevel.IsSwingHigh())
+            var lastSwingLevel = GetMostRecentSwingLevel();
+
+            if (lastSwingLevel != null && lastSwingLevel.IsSwingHigh())
             {
-                if (LastSwingLevel.Value > High[2])
+                if (lastSwingLevel.Value > High[2])
                     return;
 
-                swingType = LastSwingLevel.Type;
-                Levels.RemoveAt(Levels.Count - 1);
+                swingType = lastSwingLevel.Type;
+                RemoveSwingLevel(lastSwingLevel);
             }
 
-            if (swingType == SwingType.None)
+            if (swingType == SwingLevelType.None)
             {
-                swingType = Levels.Any(_ => _.IsSwingHigh())
-                    ? SwingType.MinorSwingHigh
-                    : SwingType.MajorSwingHigh;
+                swingType = GetSwingLevels().Any(_ => _.IsSwingLow())
+                    ? SwingLevelType.MinorSwingHigh
+                    : SwingLevelType.MajorSwingHigh;
             }
 
-            if (closedAboveLastMajorSwingHigh)
+            if (_closedAboveLastMajorSwingHigh)
             {
-                swingType = SwingType.MajorSwingHigh;
+                swingType = SwingLevelType.MajorSwingHigh;
 
-                closedBelowLastMajorSwingLow = false;
-                closedAboveLastMajorSwingHigh = false;
+                _closedBelowLastMajorSwingLow = false;
+                _closedAboveLastMajorSwingHigh = false;
 
-                if (LastSwingLow != null)
-                    LastSwingLow.Type = SwingType.MajorSwingLow;
+                var lastSwingLow = GetMostRecentSwingLevel(_ => _.IsSwingLow());
+
+                if (lastSwingLow != null)
+                    lastSwingLow.Type = SwingLevelType.MajorSwingLow;
             }
 
             AddSwingLevel(swingType);
         }
 
-        private void AddSwingLevel(SwingType swingType)
+        private void AddSwingLevel(SwingLevelType swingType)
         {
-            var isSwingLow = swingType == SwingType.MinorSwingLow || swingType == SwingType.MajorSwingLow;
+            var isSwingLow = swingType == SwingLevelType.MinorSwingLow || swingType == SwingLevelType.MajorSwingLow;
 
             var value = isSwingLow ? Low[2] : High[2];
 
-            var swingLevel = new SwingLevelData(swingType, value, Time[2], CurrentBar - 2);
+            switch (swingType)
+            {
+                case SwingLevelType.MinorSwingHigh:
+                    _minorSwingHighs[2] = value;
+                    break;
+                case SwingLevelType.MajorSwingHigh:
+                    _majorSwingHighs[2] = value;
+                    break;
+                case SwingLevelType.MinorSwingLow:
+                    _minorSwingLows[2] = value;
+                    break;
+                case SwingLevelType.MajorSwingLow:
+                    _majorSwingLows[2] = value;
+                    break;
+            }
 
-            Levels.Add(swingLevel);
-
-            if (Levels.Count == 1)
-                startIndex = swingLevel.BarIndex;
+            if (_startIndex == int.MinValue)
+                _startIndex = CurrentBar - 2;
         }
 
         private bool IsSwingLowCandidate
@@ -321,7 +354,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                 if (Low[0] <= Low[2])
                     return false;
 
-                if (Levels.Any() && Levels.Last().TimeStamp >= Time[4])
+                var lastLevel = GetSwingLevels().LastOrDefault();
+
+                if (lastLevel != null && lastLevel.TimeStamp >= Time[4])
                     return false;
 
                 return true;
@@ -344,7 +379,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                 if (High[0] >= High[2])
                     return false;
 
-                if (Levels.Any() && Levels.Last().TimeStamp >= Time[4])
+                var lastLevel = GetSwingLevels().LastOrDefault();
+
+                if (lastLevel != null && lastLevel.TimeStamp >= Time[4])
                     return false;
 
                 return true;
@@ -352,7 +389,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         }
     }
 
-    public enum SwingType
+    public enum SwingLevelType
     {
         None,
         MinorSwingHigh,
@@ -363,7 +400,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
     public class SwingLevelData
     {
-        public SwingLevelData(SwingType type, double value, DateTime timeStamp, int barIndex)
+        public SwingLevelData(SwingLevelType type, double value, DateTime timeStamp, int barIndex)
         {
             Type = type;
             Value = value;
@@ -371,7 +408,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             BarIndex = barIndex;
         }
 
-        public SwingType Type { get; set; }
+        public SwingLevelType Type { get; set; }
 
         public double Value { get; private set; }
 
@@ -381,17 +418,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         public bool IsSwingLow()
         {
-            return Type == SwingType.MinorSwingLow || Type == SwingType.MajorSwingLow;
+            return Type == SwingLevelType.MinorSwingLow || Type == SwingLevelType.MajorSwingLow;
         }
 
         public bool IsSwingHigh()
         {
-            return Type == SwingType.MinorSwingHigh || Type == SwingType.MajorSwingHigh;
-        }
-
-        public bool IsMajorSwingLevel()
-        {
-            return Type == SwingType.MajorSwingHigh || Type == SwingType.MajorSwingLow;
+            return Type == SwingLevelType.MinorSwingHigh || Type == SwingLevelType.MajorSwingHigh;
         }
     }
 }
